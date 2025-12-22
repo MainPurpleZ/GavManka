@@ -13,6 +13,7 @@
             font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
             padding: 1rem;
             transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative; /* Для снега */
         }
 
         /* Темная тема */
@@ -30,7 +31,6 @@
         }
         body.dark-theme #theme-toggle:hover { background-color: #333; }
         
-        /* Стили для баннера в темной теме */
         body.dark-theme .banner-wrapper {
             border-color: #e0e0e0;
             opacity: 0.9;
@@ -43,25 +43,26 @@
         /* СТИЛИ БАННЕРА */
         .banner-wrapper {
             width: 100%;
-            height: 250px; /* Фиксированная высота для аккуратности */
+            height: 250px; 
             margin-bottom: 2rem;
-            border: 2px solid black; /* Жирная классическая рамка */
-            overflow: hidden; /* Обрезает все, что вылезает */
+            border: 2px solid black; 
+            overflow: hidden; 
             position: relative;
-            background-color: #f0f0f0; /* Цвет фона, пока грузится */
+            background-color: #f0f0f0;
+            z-index: 1;
         }
 
         .site-banner {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Картинка заполнит блок, не искажаясь */
-            object-position: center; /* Центрируем картинку */
+            object-fit: cover; 
+            object-position: center; 
             display: block;
         }
 
         @media (min-width: 768px) {
             .banner-wrapper {
-                height: 350px; /* На компьютерах баннер повыше */
+                height: 350px; 
             }
         }
 
@@ -111,9 +112,11 @@
         }
 
         .content {
-            max-width: 50rem; /* Читаемая ширина текста */
+            max-width: 50rem;
             font-size: 1.2rem;
             line-height: 1.6;
+            position: relative;
+            z-index: 10; /* Текст над снегом */
         }
 
         h2 {
@@ -135,11 +138,22 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 0.9rem;
-            z-index: 10;
+            z-index: 20;
         }
         #theme-toggle:hover {
             background-color: black;
             color: white;
+        }
+
+        /* СНЕГ */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
         }
     </style>
 </head>
@@ -147,8 +161,10 @@
 
     <button id="theme-toggle">☾ Тема</button>
 
+    <!-- Холст для снега -->
+    <canvas id="snow-canvas"></canvas>
+
     <!-- БАННЕР -->
-    <!-- Обернули в div для контроля размеров и рамки -->
     <div class="banner-wrapper">
         <img 
             src="background.png" 
@@ -187,6 +203,71 @@
             const isDark = body.classList.contains('dark-theme');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         });
+
+        // --- СКРИПТ СНЕГА ---
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function initSnow() {
+            resize();
+            window.addEventListener('resize', resize);
+            for(let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 3 + 1,
+                    d: Math.random() * 50
+                });
+            }
+            drawSnow();
+        }
+
+        let angle = 0;
+        function drawSnow() {
+            ctx.clearRect(0, 0, width, height);
+            const isDark = body.classList.contains('dark-theme');
+            ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.8)" : "rgba(100, 100, 100, 0.3)";
+            
+            ctx.beginPath();
+            for(let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                ctx.moveTo(p.x, p.y);
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            updateSnow();
+            requestAnimationFrame(drawSnow);
+        }
+
+        function updateSnow() {
+            angle += 0.01;
+            for(let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.y += Math.cos(angle + p.d) + 1 + p.r / 2;
+                p.x += Math.sin(angle) * 2;
+
+                if(p.x > width + 5 || p.x < -5 || p.y > height) {
+                    if(i % 3 > 0) {
+                        particles[i] = {x: Math.random() * width, y: -10, r: p.r, d: p.d};
+                    } else {
+                        if(Math.sin(angle) > 0) {
+                            particles[i] = {x: -5, y: Math.random() * height, r: p.r, d: p.d};
+                        } else {
+                            particles[i] = {x: width + 5, y: Math.random() * height, r: p.r, d: p.d};
+                        }
+                    }
+                }
+            }
+        }
+
+        initSnow();
     </script>
 </body>
 </html>
