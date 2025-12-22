@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Посты</title>
     <style>
-        /* --- ОБЩИЕ СТИЛИ (КАК ВЕЗДЕ) --- */
+        /* --- ОБЩИЕ СТИЛИ --- */
         body {
             margin: 0;
             min-height: 100vh;
@@ -29,7 +29,7 @@
         body.dark-theme #theme-toggle:hover { background-color: #333; }
         body.dark-theme .banner-wrapper { border-color: #e0e0e0; opacity: 0.9; }
         
-        /* Элементы постов */
+        /* Элементы постов в темной теме */
         body.dark-theme .post-card, body.dark-theme .comment-card {
             border-color: #444;
             background-color: #1a1a1a;
@@ -76,10 +76,9 @@
         /* Снег */
         #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
 
-        /* --- СТИЛИ ДЛЯ ПОСТОВ (REDDIT STYLE) --- */
+        /* --- СТИЛИ ДЛЯ ПОСТОВ --- */
         .content { max-width: 50rem; position: relative; z-index: 10; }
 
-        /* Форма создания */
         .create-post-form {
             border: 2px solid black;
             padding: 1rem;
@@ -88,35 +87,20 @@
         }
         
         input, textarea {
-            width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-family: inherit;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            background: transparent;
+            width: 100%; padding: 0.5rem; margin-bottom: 0.5rem;
+            font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; background: transparent;
         }
 
         button.btn-primary {
-            background: black;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
+            background: black; color: white; border: none; padding: 0.5rem 1rem;
+            cursor: pointer; font-family: inherit; font-weight: bold;
         }
         button.btn-primary:hover { opacity: 0.8; }
-        
         body.dark-theme button.btn-primary { background: #e0e0e0; color: black; }
 
-        /* Список постов */
         .post-card {
-            border: 1px solid #ccc;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            cursor: pointer;
-            transition: border-color 0.2s;
+            border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem;
+            cursor: pointer; transition: border-color 0.2s;
         }
         .post-card:hover { border-color: black; }
         body.dark-theme .post-card:hover { border-color: white; }
@@ -125,20 +109,11 @@
         .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
         .post-preview { font-size: 1rem; line-height: 1.5; }
         
-        /* Детальный просмотр */
         #post-detail-view { display: none; }
-        .back-btn { 
-            display: inline-block; margin-bottom: 1rem; 
-            cursor: pointer; text-decoration: underline; 
-        }
+        .back-btn { display: inline-block; margin-bottom: 1rem; cursor: pointer; text-decoration: underline; }
         
         .comment-section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
-        .comment-card {
-            border-left: 2px solid #ccc;
-            padding-left: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
+        .comment-card { border-left: 2px solid #ccc; padding-left: 1rem; margin-bottom: 1rem; font-size: 0.95rem; }
 
         .hidden { display: none !important; }
     </style>
@@ -178,18 +153,13 @@
 
             <div id="posts-container">
                 <p style="opacity: 0.5">Загрузка постов...</p>
-                <!-- Сюда попадут посты из Firebase -->
             </div>
         </div>
 
         <!-- Просмотр одного поста -->
         <div id="post-detail-view">
             <span class="back-btn" onclick="closePost()">← Назад к ленте</span>
-            
-            <div id="detail-content">
-                <!-- Контент поста -->
-            </div>
-
+            <div id="detail-content"></div>
             <div class="comment-section">
                 <h3>Комментарии</h3>
                 <div class="create-post-form" style="border: 1px dashed #ccc; background: transparent;">
@@ -197,54 +167,36 @@
                     <textarea id="comment-text" rows="2" placeholder="Ваш комментарий..."></textarea>
                     <button class="btn-primary" onclick="addComment()">Отправить</button>
                 </div>
-                <div id="comments-list">
-                    <!-- Список комментариев -->
-                </div>
+                <div id="comments-list"></div>
             </div>
         </div>
-
     </div>
 
     <!-- FIREBASE СКРИПТЫ -->
     <script type="module">
-        // Импорт Firebase
+        // Импорт Firebase через CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- ВСТАВЬТЕ СЮДА ВАШ КОНФИГ FIREBASE ---
-        // 1. Зайдите на console.firebase.google.com
-        // 2. Создайте проект -> Web App
-        // 3. Скопируйте const firebaseConfig = { ... }; и вставьте ниже
-        
+        // ВАШ КОНФИГ FIREBASE
         const firebaseConfig = {
-            // apiKey: "AIzaSy...",
-            // authDomain: "...",
-            // projectId: "...",
-            // storageBucket: "...",
-            // messagingSenderId: "...",
-            // appId: "..."
+          apiKey: "AIzaSyBj0O4Td-w4Dm2ii5S2Rg8pvAnzbY1C6Rw",
+          authDomain: "gavmanka-879a8.firebaseapp.com",
+          projectId: "gavmanka-879a8",
+          storageBucket: "gavmanka-879a8.firebasestorage.app",
+          messagingSenderId: "122827134074",
+          appId: "1:122827134074:web:44e44097cc102e666ad7c3",
+          measurementId: "G-5HQ1WTQQSK"
         };
 
-        // Проверка конфига
-        let db;
-        if (!firebaseConfig.apiKey) {
-            document.getElementById('posts-container').innerHTML = `
-                <div style="border: 2px solid red; padding: 1rem; color: red;">
-                    <strong>Ошибка настройки:</strong><br>
-                    Владелец сайта должен добавить Firebase Config в файл posts.html.<br>
-                    (Откройте код и найдите строку "ВСТАВЬТЕ СЮДА ВАШ КОНФИГ")
-                </div>
-            `;
-        } else {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            initApp();
-        }
+        // Инициализация
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         let currentPostId = null;
 
+        // Инициализация приложения (Запуск слушателя постов)
         function initApp() {
-            // Подписка на посты (реальное время)
             const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
             
             onSnapshot(q, (snapshot) => {
@@ -262,43 +214,46 @@
                     div.className = 'post-card';
                     div.onclick = () => openPost(docSnap.id, post);
                     
-                    // Форматирование даты
                     const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleDateString() : 'Только что';
 
                     div.innerHTML = `
-                        <div class="post-meta">Автор: ${post.author || 'Аноним'} • ${date}</div>
+                        <div class="post-meta">Автор: ${escapeHtml(post.author || 'Аноним')} • ${date}</div>
                         <div class="post-title">${escapeHtml(post.title)}</div>
                         <div class="post-preview">${escapeHtml(post.content).substring(0, 100)}...</div>
                         <div style="font-size: 0.8rem; margin-top:0.5rem; font-weight:bold;">[Читать комментарии]</div>
                     `;
                     container.appendChild(div);
                 });
+            }, (error) => {
+                console.error("Ошибка:", error);
+                document.getElementById('posts-container').innerHTML = `
+                    <div style="color:red; border:1px solid red; padding:10px;">
+                        Ошибка загрузки. Возможно, вы не включили базу данных в консоли Firebase.<br>
+                        (Project -> Build -> Firestore Database -> Create -> <b>Start in Test Mode</b>)
+                    </div>`;
             });
         }
+        initApp();
 
-        // Глобальные функции для HTML (через window)
+        // Глобальные функции
         window.createPost = async () => {
             const author = document.getElementById('new-post-author').value;
             const title = document.getElementById('new-post-title').value;
             const content = document.getElementById('new-post-content').value;
 
-            if (!author || !title || !content) {
-                alert("Заполните все поля!");
-                return;
-            }
+            if (!author || !title || !content) { alert("Заполните все поля!"); return; }
 
             try {
                 await addDoc(collection(db, "posts"), {
                     author, title, content,
                     timestamp: serverTimestamp()
                 });
-                // Очистка
                 document.getElementById('new-post-title').value = "";
                 document.getElementById('new-post-content').value = "";
                 alert("Пост опубликован!");
             } catch (e) {
                 console.error("Error adding document: ", e);
-                alert("Ошибка при отправке (проверьте консоль)");
+                alert("Ошибка при отправке. Проверьте консоль (F12) или настройки Firebase.");
             }
         };
 
@@ -307,15 +262,12 @@
             document.getElementById('feed-view').classList.add('hidden');
             document.getElementById('post-detail-view').style.display = 'block';
 
-            // Рендер деталей поста
             const date = postData.timestamp ? new Date(postData.timestamp.seconds * 1000).toLocaleString() : 'Только что';
             document.getElementById('detail-content').innerHTML = `
-                <div class="post-meta">Автор: ${postData.author} • ${date}</div>
+                <div class="post-meta">Автор: ${escapeHtml(postData.author)} • ${date}</div>
                 <h2 style="margin-top:0">${escapeHtml(postData.title)}</h2>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(postData.content)}</div>
             `;
-
-            // Загрузка комментариев
             loadComments(id);
         };
 
@@ -326,9 +278,8 @@
         };
 
         let unsubscribeComments = null;
-
         function loadComments(postId) {
-            if (unsubscribeComments) unsubscribeComments(); // Отписка от предыдущего поста
+            if (unsubscribeComments) unsubscribeComments();
             
             const commentsRef = collection(db, "posts", postId, "comments");
             const q = query(commentsRef, orderBy("timestamp", "asc"));
@@ -336,11 +287,7 @@
             unsubscribeComments = onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('comments-list');
                 list.innerHTML = "";
-                
-                if (snapshot.empty) {
-                    list.innerHTML = "<p style='font-style:italic; opacity:0.6'>Здесь пока тихо...</p>";
-                    return;
-                }
+                if (snapshot.empty) { list.innerHTML = "<p style='font-style:italic; opacity:0.6'>Здесь пока тихо...</p>"; return; }
 
                 snapshot.forEach(doc => {
                     const c = doc.data();
@@ -359,29 +306,21 @@
             if (!currentPostId) return;
             const author = document.getElementById('comment-author').value;
             const text = document.getElementById('comment-text').value;
-
             if (!author || !text) return alert("Введите имя и текст!");
 
             await addDoc(collection(db, "posts", currentPostId, "comments"), {
-                author, text,
-                timestamp: serverTimestamp()
+                author, text, timestamp: serverTimestamp()
             });
             document.getElementById('comment-text').value = "";
         };
 
-        // Защита от XSS
         function escapeHtml(text) {
             if (!text) return "";
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
     </script>
 
-    <!-- СКРИПТЫ ТЕМЫ И СНЕГА (КАК ВЕЗДЕ) -->
+    <!-- СКРИПТЫ ТЕМЫ И СНЕГА -->
     <script>
         // Тема
         const toggleBtn = document.getElementById('theme-toggle');
