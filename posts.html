@@ -39,7 +39,7 @@
 
         .post-card { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.2s; position: relative; }
         .post-card:hover { border-color: black; }
-        .post-card.pinned { border: 2px solid #d4af37; background: rgba(212, 175, 55, 0.05); } /* Золотая рамка для закрепа */
+        .post-card.pinned { border: 2px solid #d4af37; background: rgba(212, 175, 55, 0.05); } 
 
         .post-meta { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem; }
         .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
@@ -51,24 +51,32 @@
         .btn-pin { background: gold; color: black; }
         .btn-ban { background: black; }
 
-        /* --- ЗОЛОТОЙ ПОСТ --- */
-        .gold-event-area { text-align: center; margin: 1rem 0; padding: 1rem; border: 2px dashed #d4af37; background: rgba(255, 215, 0, 0.1); }
+        /* --- ИВЕНТЫ --- */
+        .event-area { text-align: center; margin: 1rem 0; padding: 1rem; border: 2px dashed #777; background: rgba(0,0,0,0.05); }
+        
+        /* Золотой пост */
+        .gold-style { border-color: #d4af37; background: rgba(255, 215, 0, 0.1); }
         .gold-btn { 
-            background: linear-gradient(45deg, #ffd700, #ffaa00); 
-            border: 2px solid #b8860b; 
-            color: #5c4004;
-            font-size: 1.2rem; padding: 0.5rem 2rem; 
-            border-radius: 50px; cursor: pointer; 
-            box-shadow: 0 4px 0 #b8860b;
-            transition: transform 0.1s;
+            background: linear-gradient(45deg, #ffd700, #ffaa00); border: 2px solid #b8860b; color: #5c4004;
+            font-size: 1.2rem; padding: 0.5rem 2rem; border-radius: 50px; cursor: pointer; 
+            box-shadow: 0 4px 0 #b8860b; transition: transform 0.1s;
         }
         .gold-btn:active { transform: translateY(4px); box-shadow: none; }
         .gold-counter { font-size: 2rem; font-weight: bold; color: #d4af37; display: block; margin-top: 0.5rem; }
 
-        /* --- АДМИН ПАНЕЛЬ --- */
-        .admin-panel {
-            border: 2px solid red; padding: 1rem; margin-bottom: 2rem; background: #fff0f0; display: none;
+        /* Русская рулетка */
+        .roulette-style { border-color: #ff0000; background: rgba(50, 0, 0, 0.1); }
+        .roulette-btn {
+            background: #333; border: 2px solid red; color: white;
+            font-size: 1.2rem; padding: 0.5rem 2rem; cursor: pointer;
+            font-family: 'Courier New', monospace; font-weight: bold;
+            transition: all 0.2s;
         }
+        .roulette-btn:hover { background: red; color: black; }
+        .roulette-btn:active { transform: scale(0.95); }
+
+        /* --- АДМИН ПАНЕЛЬ --- */
+        .admin-panel { border: 2px solid red; padding: 1rem; margin-bottom: 2rem; background: #fff0f0; display: none; }
         .admin-panel h3 { color: red; margin-top: 0; text-transform: uppercase; }
         .user-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
 
@@ -134,9 +142,17 @@
                 <input type="text" id="new-post-title" placeholder="Заголовок темы">
                 <textarea id="new-post-content" rows="3" placeholder="О чем хотите рассказать?"></textarea>
                 
-                <!-- Опция Золотого Поста (Только для админов) -->
+                <!-- Опции Админа -->
                 <div id="admin-post-options" style="display:none; margin-bottom:1rem; border-top:1px dashed #ccc; padding-top:0.5rem;">
-                    <label><input type="checkbox" id="is-golden"> 🏆 Сделать Золотым Постом (Ивент)</label>
+                    <label style="margin-right:15px; cursor:pointer;">
+                        <input type="radio" name="post-type" value="normal" checked> Обычный
+                    </label>
+                    <label style="margin-right:15px; cursor:pointer; color:goldenrod; font-weight:bold;">
+                        <input type="radio" name="post-type" value="golden"> 🏆 Золотой
+                    </label>
+                    <label style="cursor:pointer; color:red; font-weight:bold;">
+                        <input type="radio" name="post-type" value="roulette"> 💀 Рулетка
+                    </label>
                 </div>
 
                 <button class="btn-primary" onclick="createPost()">Опубликовать</button>
@@ -192,7 +208,6 @@
         let isMuted = false;
         let currentPostId = null;
 
-        // Авторизация и получение прав
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
@@ -200,7 +215,6 @@
                 document.getElementById('auth-link').innerText = "Аккаунт";
                 document.getElementById('current-user-name').innerText = user.email;
 
-                // Получаем роль и статус бана из БД
                 const userRef = doc(db, "users", user.email);
                 const userSnap = await getDoc(userRef);
 
@@ -210,12 +224,8 @@
                     isBanned = data.isBanned || false;
                     isMuted = data.isMuted || false;
                 } else {
-                    // Главный админ всегда админ, даже если нет в БД
-                    if(user.email === "admin@gav.manka") {
-                        myRole = 'admin';
-                    }
+                    if(user.email === "admin@gav.manka") myRole = 'admin';
                 }
-
                 applyPermissions();
             } else {
                 myRole = 'user'; isBanned = false; isMuted = false;
@@ -225,7 +235,6 @@
                 document.getElementById('admin-panel').style.display = 'none';
                 document.getElementById('auth-link').innerText = "Вход";
             }
-            // Загружаем посты
             initPosts();
         });
 
@@ -236,16 +245,12 @@
                 document.getElementById('comment-form-container').classList.add('hidden');
                 return;
             }
-
-            // Показываем формы
             document.getElementById('post-form-container').classList.remove('hidden');
             document.getElementById('comment-form-container').classList.remove('hidden');
 
-            // Админка
             if(myRole === 'admin' || myRole === 'mod') {
                 document.getElementById('admin-panel').style.display = 'block';
                 document.getElementById('admin-post-options').style.display = 'block';
-                
                 let badges = "";
                 if(myRole === 'admin') badges += '<span class="role-badge badge-admin">ADMIN</span>';
                 if(myRole === 'mod') badges += '<span class="role-badge badge-mod">MOD</span>';
@@ -253,9 +258,9 @@
             }
         }
 
-        // --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (АДМИНКА) ---
+        // --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ---
         window.manageUser = async () => {
-            if(myRole !== 'admin' && myRole !== 'mod') return;
+            if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет доступа!");
             
             const email = document.getElementById('manage-email').value.trim();
             const action = document.getElementById('manage-action').value;
@@ -274,32 +279,25 @@
             else if(action === 'clear') { updates.role = 'user'; updates.isBanned = false; updates.isMuted = false; }
 
             try {
-                // Создаем или обновляем запись в коллекции users
                 await setDoc(doc(db, "users", email), updates, { merge: true });
                 statusMsg.innerText = `Успешно: ${email} -> ${action}`;
                 setTimeout(() => statusMsg.innerText = "", 3000);
-            } catch(e) {
-                alert("Ошибка: " + e.message);
-            }
+            } catch(e) { alert("Ошибка: " + e.message); }
         };
 
-        // --- ЛОГИКА ПОСТОВ ---
+        // --- ПОСТЫ ---
         function initPosts() {
             const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-            
             onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('posts-container');
                 container.innerHTML = "";
-                
-                // Преобразуем в массив для JS-сортировки (чтобы Закрепленные были сверху)
                 let posts = [];
                 snapshot.forEach(doc => posts.push({ id: doc.id, ...doc.data() }));
 
-                // Сортировка: Сначала Pinned, потом по дате
                 posts.sort((a, b) => {
                     if (a.isPinned && !b.isPinned) return -1;
                     if (!a.isPinned && b.isPinned) return 1;
-                    return b.timestamp - a.timestamp; // По дате, если одинаковый пин
+                    return b.timestamp - a.timestamp;
                 });
 
                 if (posts.length === 0) { container.innerHTML = "<p>Пока нет постов.</p>"; return; }
@@ -308,7 +306,6 @@
                     const div = document.createElement('div');
                     div.className = `post-card ${post.isPinned ? 'pinned' : ''}`;
                     
-                    // Кнопки управления (Админ/Мод)
                     let adminControls = "";
                     if(myRole === 'admin' || myRole === 'mod') {
                         adminControls = `
@@ -321,11 +318,14 @@
 
                     const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleDateString() : '...';
                     const titlePrefix = post.isPinned ? "📌 " : "";
-                    const goldBadge = post.type === 'golden' ? " 🏆 [ЗОЛОТОЙ ИВЕНТ]" : "";
+                    
+                    let typeBadge = "";
+                    if(post.type === 'golden') typeBadge = " 🏆 [ЗОЛОТОЙ ИВЕНТ]";
+                    if(post.type === 'roulette') typeBadge = " 💀 [РУССКАЯ РУЛЕТКА]";
 
                     div.innerHTML = `
                         ${adminControls}
-                        <div class="post-meta">Автор: ${escapeHtml(post.author)} • ${date} ${goldBadge}</div>
+                        <div class="post-meta">Автор: ${escapeHtml(post.author)} • ${date} ${typeBadge}</div>
                         <div class="post-title">${titlePrefix}${escapeHtml(post.title)}</div>
                         <div class="post-preview">${escapeHtml(post.content).substring(0, 100)}...</div>
                     `;
@@ -341,10 +341,15 @@
 
             const title = document.getElementById('new-post-title').value;
             const content = document.getElementById('new-post-content').value;
-            const isGolden = document.getElementById('is-golden').checked;
+            
+            // Выбор типа поста
+            let postType = 'normal';
+            if(myRole === 'admin' || myRole === 'mod') {
+                const radios = document.getElementsByName('post-type');
+                for(let r of radios) if(r.checked) postType = r.value;
+            }
 
             if (!title || !content) return alert("Заполните поля!");
-            if (isGolden && myRole !== 'admin') return alert("Только Админ может делать золотые посты!");
 
             try {
                 await addDoc(collection(db, "posts"), {
@@ -352,38 +357,59 @@
                     title, content,
                     timestamp: serverTimestamp(),
                     isPinned: false,
-                    type: isGolden ? 'golden' : 'normal',
+                    type: postType,
                     goldCount: 0
                 });
                 document.getElementById('new-post-title').value = "";
                 document.getElementById('new-post-content').value = "";
-                document.getElementById('is-golden').checked = false;
+                // Сброс на обычный
+                if(document.querySelector('input[name="post-type"][value="normal"]')) 
+                    document.querySelector('input[name="post-type"][value="normal"]').checked = true;
             } catch (e) { alert("Ошибка: " + e.message); }
         };
 
-        // --- ДЕЙСТВИЯ С ПОСТАМИ ---
+        // --- ДЕЙСТВИЯ (ЗАЩИТА ОТ ОБЫЧНЫХ ЮЗЕРОВ) ---
         window.deletePost = async (id) => {
+            if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет прав!");
             if(!confirm("Удалить этот пост?")) return;
             try { await deleteDoc(doc(db, "posts", id)); } catch (e) { alert(e.message); }
         };
 
         window.togglePin = async (id, currentStatus) => {
+            if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет прав!");
             try { await updateDoc(doc(db, "posts", id), { isPinned: !currentStatus }); } catch (e) { alert(e.message); }
         };
 
-        // --- ЗОЛОТОЙ ПОСТ (КЛИКЕР) ---
+        // --- ИВЕНТЫ ---
         window.mineGold = async (id) => {
-            if(!currentUser) return alert("Войдите, чтобы собирать золото!");
-            // Анимация клика (опционально можно добавить звук)
-            try {
-                const postRef = doc(db, "posts", id);
-                await updateDoc(postRef, {
-                    goldCount: increment(1)
-                });
-            } catch(e) { console.error(e); }
+            if(!currentUser) return alert("Войдите!");
+            try { await updateDoc(doc(db, "posts", id), { goldCount: increment(1) }); } catch(e) { console.error(e); }
         };
 
-        // --- ПРОСМОТР И КОММЕНТАРИИ ---
+        window.playRoulette = async (id) => {
+            if(!currentUser) return alert("Войдите!");
+            // Шанс 1 к 6 (примерно 16%)
+            const isDead = Math.random() < 0.166;
+            
+            if(isDead) {
+                alert("💥 БА-БАХ! Вы погибли...");
+                // Пишем коммент от имени системы
+                await addDoc(collection(db, "posts", id, "comments"), {
+                    author: "💀 СУДЬБА",
+                    text: `Игрок ${currentUser.email} нажал на курок и... ПОГИБ!`,
+                    timestamp: serverTimestamp()
+                });
+            } else {
+                alert("😓 Щелк... Вам повезло. Вы живы.");
+                await addDoc(collection(db, "posts", id, "comments"), {
+                    author: "🍀 УДАЧА",
+                    text: `Игрок ${currentUser.email} выжил в рулетке.`,
+                    timestamp: serverTimestamp()
+                });
+            }
+        };
+
+        // --- ПРОСМОТР ---
         window.openPost = (id, postData) => {
             currentPostId = id;
             document.getElementById('feed-view').classList.add('hidden');
@@ -391,29 +417,40 @@
 
             const date = postData.timestamp ? new Date(postData.timestamp.seconds * 1000).toLocaleString() : '...';
             
-            // Если пост Золотой - показываем кликер
-            let goldSection = "";
+            let eventSection = "";
+            
+            // UI для Золота
             if(postData.type === 'golden') {
-                goldSection = `
-                    <div class="gold-event-area">
+                eventSection = `
+                    <div class="event-area gold-style">
                         <h3>🏆 ЗОЛОТОЙ ИВЕНТ 🏆</h3>
-                        <p>Собирайте золото всем сообществом!</p>
+                        <p>Кликайте, чтобы пополнить казну!</p>
                         <button class="gold-btn" onclick="mineGold('${id}')">СОБРАТЬ ЗОЛОТО</button>
                         <span class="gold-counter" id="gold-counter-display">${postData.goldCount || 0}</span>
                     </div>
                 `;
-                // Подписываемся на обновление счетчика золота в реальном времени
                 onSnapshot(doc(db, "posts", id), (doc) => {
                     const el = document.getElementById('gold-counter-display');
                     if(el && doc.exists()) el.innerText = doc.data().goldCount || 0;
                 });
             }
 
+            // UI для Рулетки
+            if(postData.type === 'roulette') {
+                eventSection = `
+                    <div class="event-area roulette-style">
+                        <h3>💀 РУССКАЯ РУЛЕТКА 💀</h3>
+                        <p>Шанс выжить: 5 из 6. Рискнешь?</p>
+                        <button class="roulette-btn" onclick="playRoulette('${id}')">🔫 НАЖАТЬ НА КУРОК</button>
+                    </div>
+                `;
+            }
+
             document.getElementById('detail-content').innerHTML = `
                 <div class="post-meta">Автор: ${escapeHtml(postData.author)} • ${date}</div>
                 <h2>${escapeHtml(postData.title)}</h2>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(postData.content)}</div>
-                ${goldSection}
+                ${eventSection}
             `;
             loadComments(id);
         };
@@ -459,6 +496,7 @@
         };
         
         window.deleteComment = async (postId, commentId) => {
+             if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет прав!");
              if(!confirm("Удалить комментарий?")) return;
              try { await deleteDoc(doc(db, "posts", postId, "comments", commentId)); } catch (e) { alert(e.message); }
         };
@@ -468,7 +506,6 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // --- ТЕМА И СНЕГ (Без изменений) ---
         const toggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-theme');
