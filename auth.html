@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gav.manka - Вход</title>
+    <style>
+        /* Стили такие же, как везде */
+        body {
+            margin: 0; min-height: 100vh; background-color: white; color: black;
+            font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+            padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+        body.dark-theme { background-color: #121212; color: #e0e0e0; }
+        body.dark-theme nav { border-color: #e0e0e0; }
+        body.dark-theme nav a { color: #e0e0e0; }
+        body.dark-theme h1 a { color: #e0e0e0; }
+        body.dark-theme input { background: #222; color: white; border-color: #444; }
+        body.dark-theme button { background: #e0e0e0; color: black; }
+
+        @media (min-width: 768px) { body { padding: 3rem; } }
+
+        h1 { font-size: 2.5rem; margin: 0 0 1.5rem 0; font-weight: 700; }
+        h1 a { text-decoration: none; color: black; }
+        
+        nav {
+            border-top: 2px solid black; border-bottom: 2px solid black;
+            padding: 0.75rem 0; margin-bottom: 2.5rem; display: flex; gap: 2rem;
+        }
+        nav a { font-size: 1.25rem; color: black; text-decoration: none; font-weight: 500; }
+        nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+        nav a.active { font-weight: bold; text-decoration: underline; }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 0 auto;
+            border: 2px solid black;
+            padding: 2rem;
+            background: rgba(255,255,255,0.05);
+        }
+        body.dark-theme .auth-container { border-color: #e0e0e0; }
+
+        input {
+            width: 100%; padding: 0.5rem; margin-bottom: 1rem;
+            border: 1px solid #ccc; background: transparent; box-sizing: border-box; font-family: inherit;
+        }
+
+        button {
+            width: 100%; padding: 0.7rem; background: black; color: white;
+            border: none; cursor: pointer; font-weight: bold; font-family: inherit; margin-bottom: 1rem;
+        }
+        button:hover { opacity: 0.8; }
+
+        .switch-mode { text-align: center; font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
+        
+        #user-info { text-align: center; display: none; }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" style="position:fixed; top:1rem; right:1rem; width:auto;">☾ Тема</button>
+    <h1><a href="index.html">Gav.manka</a></h1>
+
+    <nav>
+        <a href="index.html">Главная</a>
+        <a href="info.html">Информация</a>
+        <a href="projects.html">Проекты</a>
+        <a href="posts.html">Посты</a>
+        <a href="auth.html" class="active">Аккаунт</a>
+    </nav>
+
+    <div class="auth-container">
+        <!-- Форма Входа/Регистрации -->
+        <div id="auth-forms">
+            <h2 id="form-title" style="margin-top:0">Вход</h2>
+            <input type="email" id="email" placeholder="Email (например: admin@gav.manka)">
+            <input type="password" id="password" placeholder="Пароль">
+            <button onclick="handleAuth()" id="submit-btn">Войти</button>
+            <div class="switch-mode" onclick="toggleMode()" id="switch-text">Нет аккаунта? Зарегистрироваться</div>
+            <p id="error-msg" style="color:red; font-size:0.9rem;"></p>
+        </div>
+
+        <!-- Если уже вошел -->
+        <div id="user-info">
+            <h2>Вы вошли как:</h2>
+            <p id="user-email" style="font-weight:bold;"></p>
+            <p id="admin-badge" style="color: red; display: none;">[ADMIN ACCESS]</p>
+            <button onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBj0O4Td-w4Dm2ii5S2Rg8pvAnzbY1C6Rw",
+          authDomain: "gavmanka-879a8.firebaseapp.com",
+          projectId: "gavmanka-879a8",
+          storageBucket: "gavmanka-879a8.firebasestorage.app",
+          messagingSenderId: "122827134074",
+          appId: "1:122827134074:web:44e44097cc102e666ad7c3",
+          measurementId: "G-5HQ1WTQQSK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let isLoginMode = true;
+
+        window.toggleMode = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('form-title').innerText = isLoginMode ? "Вход" : "Регистрация";
+            document.getElementById('submit-btn').innerText = isLoginMode ? "Войти" : "Создать аккаунт";
+            document.getElementById('switch-text').innerText = isLoginMode ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти";
+            document.getElementById('error-msg').innerText = "";
+        };
+
+        window.handleAuth = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-msg');
+
+            if(!email || !password) { errorDiv.innerText = "Заполните все поля"; return; }
+
+            try {
+                if(isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+                // Автоматически обновится UI через onAuthStateChanged
+            } catch (error) {
+                console.error(error);
+                let msg = "Ошибка: " + error.message;
+                if(error.code === 'auth/invalid-email') msg = "Некорректный Email";
+                if(error.code === 'auth/wrong-password') msg = "Неверный пароль";
+                if(error.code === 'auth/email-already-in-use') msg = "Этот Email уже занят";
+                if(error.code === 'auth/weak-password') msg = "Пароль слишком простой (мин. 6 символов)";
+                errorDiv.innerText = msg;
+            }
+        };
+
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-forms').style.display = 'none';
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('user-email').innerText = user.email;
+                
+                // Проверка на админа (по email)
+                if(user.email === "admin@gav.manka" || user.email === "Admin Account") {
+                     document.getElementById('admin-badge').style.display = 'block';
+                }
+            } else {
+                document.getElementById('auth-forms').style.display = 'block';
+                document.getElementById('user-info').style.display = 'none';
+            }
+        });
+
+        // Тема
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-theme');
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+        });
+    </script>
+</body>
+</html>
