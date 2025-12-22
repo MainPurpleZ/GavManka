@@ -5,21 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Посты</title>
     <style>
-        /* Стили */
-        body {
-            margin: 0; min-height: 100vh; background-color: white; color: black;
-            font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-            padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative;
-        }
+        /* --- СТИЛИ (База) --- */
+        body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; }
         body.dark-theme { background-color: #121212; color: #e0e0e0; }
         body.dark-theme nav { border-color: #e0e0e0; }
         body.dark-theme nav a { color: #e0e0e0; }
         body.dark-theme h1 a { color: #e0e0e0; }
         body.dark-theme .post-card, body.dark-theme .comment-card { border-color: #444; background-color: #1a1a1a; }
-        body.dark-theme input, body.dark-theme textarea { background-color: #222; color: #e0e0e0; border-color: #444; }
-        body.dark-theme button.btn-primary { background: #e0e0e0; color: black; }
-        body.dark-theme .banner-wrapper { border-color: #e0e0e0; opacity: 0.9; }
-
+        body.dark-theme input, body.dark-theme textarea, body.dark-theme select { background-color: #222; color: #e0e0e0; border-color: #444; }
+        body.dark-theme .admin-panel { background-color: #2a2a2a; border-color: #555; }
+        
         @media (min-width: 768px) { body { padding: 3rem; } }
 
         .banner-wrapper { width: 100%; height: 250px; margin-bottom: 2rem; border: 2px solid black; overflow: hidden; position: relative; background-color: #f0f0f0; z-index: 1; }
@@ -28,43 +23,64 @@
 
         h1 { font-size: 2.5rem; margin: 0 0 1.5rem 0; font-weight: 700; }
         h1 a { text-decoration: none; color: black; }
-        
         nav { border-top: 2px solid black; border-bottom: 2px solid black; padding: 0.75rem 0; margin-bottom: 2.5rem; display: flex; gap: 2rem; }
         nav a { font-size: 1.25rem; color: black; text-decoration: none; font-weight: 500; }
         nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
         nav a.active { font-weight: bold; text-decoration: underline; }
 
         .content { max-width: 50rem; position: relative; z-index: 10; }
-
-        .create-post-form { border: 2px solid black; padding: 1rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); }
-        input, textarea { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; background: transparent; }
         
+        /* --- ФОРМЫ И ПОСТЫ --- */
+        .create-post-form { border: 2px solid black; padding: 1rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); }
+        input, textarea, select { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; background: transparent; }
         button.btn-primary { background: black; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; font-family: inherit; font-weight: bold; }
         button.btn-primary:hover { opacity: 0.8; }
+        body.dark-theme button.btn-primary { background: #e0e0e0; color: black; }
 
         .post-card { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.2s; position: relative; }
         .post-card:hover { border-color: black; }
-        
+        .post-card.pinned { border: 2px solid #d4af37; background: rgba(212, 175, 55, 0.05); } /* Золотая рамка для закрепа */
+
         .post-meta { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem; }
-        .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         
-        /* Кнопка удаления (только для админа) */
-        .delete-btn {
-            position: absolute; top: 10px; right: 10px;
-            background: red; color: white; border: none; padding: 2px 8px;
-            font-size: 0.7rem; cursor: pointer; display: none; z-index: 10;
+        /* --- АДМИНСКИЕ КНОПКИ --- */
+        .admin-controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 10; }
+        .action-btn { border: none; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold; }
+        .btn-del { background: red; }
+        .btn-pin { background: gold; color: black; }
+        .btn-ban { background: black; }
+
+        /* --- ЗОЛОТОЙ ПОСТ --- */
+        .gold-event-area { text-align: center; margin: 1rem 0; padding: 1rem; border: 2px dashed #d4af37; background: rgba(255, 215, 0, 0.1); }
+        .gold-btn { 
+            background: linear-gradient(45deg, #ffd700, #ffaa00); 
+            border: 2px solid #b8860b; 
+            color: #5c4004;
+            font-size: 1.2rem; padding: 0.5rem 2rem; 
+            border-radius: 50px; cursor: pointer; 
+            box-shadow: 0 4px 0 #b8860b;
+            transition: transform 0.1s;
         }
-        .delete-btn:hover { background: darkred; }
+        .gold-btn:active { transform: translateY(4px); box-shadow: none; }
+        .gold-counter { font-size: 2rem; font-weight: bold; color: #d4af37; display: block; margin-top: 0.5rem; }
+
+        /* --- АДМИН ПАНЕЛЬ --- */
+        .admin-panel {
+            border: 2px solid red; padding: 1rem; margin-bottom: 2rem; background: #fff0f0; display: none;
+        }
+        .admin-panel h3 { color: red; margin-top: 0; text-transform: uppercase; }
+        .user-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
 
         #post-detail-view { display: none; }
         .back-btn { display: inline-block; margin-bottom: 1rem; cursor: pointer; text-decoration: underline; }
         .hidden { display: none !important; }
-        
         #theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 2px solid black; padding: 0.5rem; cursor: pointer; z-index: 20; }
         #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         
-        .login-prompt { border: 1px dashed black; padding: 1rem; text-align: center; margin-bottom: 2rem; }
-        .login-prompt a { color: blue; font-weight: bold; }
+        .role-badge { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; }
+        .badge-admin { background: red; color: white; }
+        .badge-mod { background: blue; color: white; }
     </style>
 </head>
 <body>
@@ -86,22 +102,48 @@
     </nav>
 
     <div class="content">
-        <!-- Лента постов -->
+        
+        <!-- АДМИН ПАНЕЛЬ (Видна только админам) -->
+        <div id="admin-panel" class="admin-panel">
+            <h3>Управление (Admin/Mod)</h3>
+            <p style="font-size:0.9rem">Назначение прав и наказаний по Email.</p>
+            <div class="user-row">
+                <input type="email" id="manage-email" placeholder="Email пользователя">
+                <select id="manage-action">
+                    <option value="set_admin">Сделать Админом</option>
+                    <option value="set_mod">Сделать Модером</option>
+                    <option value="ban">ЗАБАНИТЬ</option>
+                    <option value="mute">Замутить (только чтение)</option>
+                    <option value="clear">Снять все (Обычный юзер)</option>
+                </select>
+                <button class="btn-primary" onclick="manageUser()">OK</button>
+            </div>
+            <div id="admin-status-msg" style="font-size:0.8rem; color:green;"></div>
+        </div>
+
+        <!-- ЛЕНТА -->
         <div id="feed-view">
             <h2>Лента обсуждений</h2>
             
-            <!-- Форма (скрыта по умолчанию) -->
             <div id="post-form-container" class="create-post-form hidden">
                 <h3 style="margin-top:0">Новый пост</h3>
-                <div style="margin-bottom:0.5rem; font-size:0.9rem;">Автор: <span id="current-user-name" style="font-weight:bold">...</span></div>
+                <div style="margin-bottom:0.5rem; font-size:0.9rem;">
+                    Автор: <span id="current-user-name" style="font-weight:bold">...</span>
+                    <span id="user-badges"></span>
+                </div>
                 <input type="text" id="new-post-title" placeholder="Заголовок темы">
                 <textarea id="new-post-content" rows="3" placeholder="О чем хотите рассказать?"></textarea>
+                
+                <!-- Опция Золотого Поста (Только для админов) -->
+                <div id="admin-post-options" style="display:none; margin-bottom:1rem; border-top:1px dashed #ccc; padding-top:0.5rem;">
+                    <label><input type="checkbox" id="is-golden"> 🏆 Сделать Золотым Постом (Ивент)</label>
+                </div>
+
                 <button class="btn-primary" onclick="createPost()">Опубликовать</button>
             </div>
 
-            <!-- Сообщение для гостей -->
-            <div id="guest-msg" class="login-prompt">
-                <a href="auth.html">Войдите</a> или <a href="auth.html">зарегистрируйтесь</a>, чтобы писать посты.
+            <div id="guest-msg" style="text-align:center; padding:1rem; border:1px dashed #777; margin-bottom:1rem;">
+                <a href="auth.html">Войдите</a>, чтобы писать и участвовать в ивентах.
             </div>
 
             <div id="posts-container">
@@ -109,7 +151,7 @@
             </div>
         </div>
 
-        <!-- Просмотр поста -->
+        <!-- ДЕТАЛИ ПОСТА -->
         <div id="post-detail-view">
             <span class="back-btn" onclick="closePost()">← Назад к ленте</span>
             <div id="detail-content"></div>
@@ -126,9 +168,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc, setDoc, getDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // ВАШ КОНФИГ
         const firebaseConfig = {
           apiKey: "AIzaSyBj0O4Td-w4Dm2ii5S2Rg8pvAnzbY1C6Rw",
           authDomain: "gavmanka-879a8.firebaseapp.com",
@@ -144,70 +187,149 @@
         const auth = getAuth(app);
 
         let currentUser = null;
-        let isAdmin = false;
+        let myRole = 'user'; // 'user', 'mod', 'admin'
+        let isBanned = false;
+        let isMuted = false;
         let currentPostId = null;
 
-        // Следим за состоянием входа
-        onAuthStateChanged(auth, (user) => {
+        // Авторизация и получение прав
+        onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
-                // Если вошли
-                document.getElementById('post-form-container').classList.remove('hidden');
-                document.getElementById('comment-form-container').classList.remove('hidden');
                 document.getElementById('guest-msg').classList.add('hidden');
                 document.getElementById('auth-link').innerText = "Аккаунт";
                 document.getElementById('current-user-name').innerText = user.email;
 
-                // Проверка на админа (включая вариант "Admin Account" для согласованности)
-                if(user.email === "admin@gav.manka" || user.email === "Admin Account") {
-                    isAdmin = true;
+                // Получаем роль и статус бана из БД
+                const userRef = doc(db, "users", user.email);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    myRole = data.role || 'user';
+                    isBanned = data.isBanned || false;
+                    isMuted = data.isMuted || false;
+                } else {
+                    // Главный админ всегда админ, даже если нет в БД
+                    if(user.email === "admin@gav.manka") {
+                        myRole = 'admin';
+                    }
                 }
+
+                applyPermissions();
             } else {
-                // Если гость
+                myRole = 'user'; isBanned = false; isMuted = false;
                 document.getElementById('post-form-container').classList.add('hidden');
                 document.getElementById('comment-form-container').classList.add('hidden');
                 document.getElementById('guest-msg').classList.remove('hidden');
+                document.getElementById('admin-panel').style.display = 'none';
                 document.getElementById('auth-link').innerText = "Вход";
-                isAdmin = false;
             }
-            // Перерисовываем посты (чтобы обновились кнопки удаления)
-            initApp(); 
+            // Загружаем посты
+            initPosts();
         });
 
-        // Загрузка постов
-        function initApp() {
+        function applyPermissions() {
+            if(isBanned) {
+                alert("ВЫ ЗАБАНЕНЫ! Доступ только для чтения.");
+                document.getElementById('post-form-container').classList.add('hidden');
+                document.getElementById('comment-form-container').classList.add('hidden');
+                return;
+            }
+
+            // Показываем формы
+            document.getElementById('post-form-container').classList.remove('hidden');
+            document.getElementById('comment-form-container').classList.remove('hidden');
+
+            // Админка
+            if(myRole === 'admin' || myRole === 'mod') {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('admin-post-options').style.display = 'block';
+                
+                let badges = "";
+                if(myRole === 'admin') badges += '<span class="role-badge badge-admin">ADMIN</span>';
+                if(myRole === 'mod') badges += '<span class="role-badge badge-mod">MOD</span>';
+                document.getElementById('user-badges').innerHTML = badges;
+            }
+        }
+
+        // --- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (АДМИНКА) ---
+        window.manageUser = async () => {
+            if(myRole !== 'admin' && myRole !== 'mod') return;
+            
+            const email = document.getElementById('manage-email').value.trim();
+            const action = document.getElementById('manage-action').value;
+            const statusMsg = document.getElementById('admin-status-msg');
+
+            if(!email) return alert("Введите Email!");
+            if(myRole === 'mod' && (action === 'set_admin' || action === 'ban')) {
+                return alert("Модераторы могут только мутить. Банить может только Админ.");
+            }
+
+            const updates = {};
+            if(action === 'set_admin') { updates.role = 'admin'; updates.isBanned = false; updates.isMuted = false; }
+            else if(action === 'set_mod') { updates.role = 'mod'; updates.isBanned = false; updates.isMuted = false; }
+            else if(action === 'ban') { updates.isBanned = true; }
+            else if(action === 'mute') { updates.isMuted = true; }
+            else if(action === 'clear') { updates.role = 'user'; updates.isBanned = false; updates.isMuted = false; }
+
+            try {
+                // Создаем или обновляем запись в коллекции users
+                await setDoc(doc(db, "users", email), updates, { merge: true });
+                statusMsg.innerText = `Успешно: ${email} -> ${action}`;
+                setTimeout(() => statusMsg.innerText = "", 3000);
+            } catch(e) {
+                alert("Ошибка: " + e.message);
+            }
+        };
+
+        // --- ЛОГИКА ПОСТОВ ---
+        function initPosts() {
             const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
             
             onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('posts-container');
                 container.innerHTML = "";
                 
-                if (snapshot.empty) { container.innerHTML = "<p>Пока нет постов.</p>"; return; }
+                // Преобразуем в массив для JS-сортировки (чтобы Закрепленные были сверху)
+                let posts = [];
+                snapshot.forEach(doc => posts.push({ id: doc.id, ...doc.data() }));
 
-                snapshot.forEach((docSnap) => {
-                    const post = docSnap.data();
+                // Сортировка: Сначала Pinned, потом по дате
+                posts.sort((a, b) => {
+                    if (a.isPinned && !b.isPinned) return -1;
+                    if (!a.isPinned && b.isPinned) return 1;
+                    return b.timestamp - a.timestamp; // По дате, если одинаковый пин
+                });
+
+                if (posts.length === 0) { container.innerHTML = "<p>Пока нет постов.</p>"; return; }
+
+                posts.forEach(post => {
                     const div = document.createElement('div');
-                    div.className = 'post-card';
+                    div.className = `post-card ${post.isPinned ? 'pinned' : ''}`;
                     
-                    // Кнопка удаления (только для админа)
-                    let deleteBtnHTML = "";
-                    if(isAdmin) {
-                        deleteBtnHTML = `<button class="delete-btn" style="display:block" onclick="event.stopPropagation(); deletePost('${docSnap.id}')">УДАЛИТЬ</button>`;
+                    // Кнопки управления (Админ/Мод)
+                    let adminControls = "";
+                    if(myRole === 'admin' || myRole === 'mod') {
+                        adminControls = `
+                            <div class="admin-controls" onclick="event.stopPropagation()">
+                                <button class="action-btn btn-pin" onclick="togglePin('${post.id}', ${post.isPinned})">${post.isPinned ? 'Unpin' : '📌'}</button>
+                                <button class="action-btn btn-del" onclick="deletePost('${post.id}')">DEL</button>
+                            </div>
+                        `;
                     }
 
                     const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleDateString() : '...';
+                    const titlePrefix = post.isPinned ? "📌 " : "";
+                    const goldBadge = post.type === 'golden' ? " 🏆 [ЗОЛОТОЙ ИВЕНТ]" : "";
 
                     div.innerHTML = `
-                        ${deleteBtnHTML}
-                        <div class="post-meta">Автор: ${escapeHtml(post.author)} • ${date}</div>
-                        <div class="post-title">${escapeHtml(post.title)}</div>
+                        ${adminControls}
+                        <div class="post-meta">Автор: ${escapeHtml(post.author)} • ${date} ${goldBadge}</div>
+                        <div class="post-title">${titlePrefix}${escapeHtml(post.title)}</div>
                         <div class="post-preview">${escapeHtml(post.content).substring(0, 100)}...</div>
                     `;
-                    div.onclick = (e) => {
-                        // Не открывать пост если нажали на кнопку удаления
-                        if(e.target.classList.contains('delete-btn')) return;
-                        openPost(docSnap.id, post);
-                    }
+                    div.onclick = (e) => openPost(post.id, post);
                     container.appendChild(div);
                 });
             });
@@ -215,40 +337,83 @@
 
         window.createPost = async () => {
             if(!currentUser) return alert("Сначала войдите!");
+            if(isBanned || isMuted) return alert("Вам запрещено публиковать посты.");
+
             const title = document.getElementById('new-post-title').value;
             const content = document.getElementById('new-post-content').value;
+            const isGolden = document.getElementById('is-golden').checked;
 
-            if (!title || !content) { alert("Заполните поля!"); return; }
+            if (!title || !content) return alert("Заполните поля!");
+            if (isGolden && myRole !== 'admin') return alert("Только Админ может делать золотые посты!");
 
             try {
                 await addDoc(collection(db, "posts"), {
-                    author: currentUser.email, // Берем email как имя автора
+                    author: currentUser.email,
                     title, content,
-                    timestamp: serverTimestamp()
+                    timestamp: serverTimestamp(),
+                    isPinned: false,
+                    type: isGolden ? 'golden' : 'normal',
+                    goldCount: 0
                 });
                 document.getElementById('new-post-title').value = "";
                 document.getElementById('new-post-content').value = "";
+                document.getElementById('is-golden').checked = false;
             } catch (e) { alert("Ошибка: " + e.message); }
         };
 
-        // Удаление поста (Для админа)
+        // --- ДЕЙСТВИЯ С ПОСТАМИ ---
         window.deletePost = async (id) => {
             if(!confirm("Удалить этот пост?")) return;
-            try {
-                await deleteDoc(doc(db, "posts", id));
-            } catch (e) { alert("Ошибка удаления: " + e.message); }
-        }
+            try { await deleteDoc(doc(db, "posts", id)); } catch (e) { alert(e.message); }
+        };
 
+        window.togglePin = async (id, currentStatus) => {
+            try { await updateDoc(doc(db, "posts", id), { isPinned: !currentStatus }); } catch (e) { alert(e.message); }
+        };
+
+        // --- ЗОЛОТОЙ ПОСТ (КЛИКЕР) ---
+        window.mineGold = async (id) => {
+            if(!currentUser) return alert("Войдите, чтобы собирать золото!");
+            // Анимация клика (опционально можно добавить звук)
+            try {
+                const postRef = doc(db, "posts", id);
+                await updateDoc(postRef, {
+                    goldCount: increment(1)
+                });
+            } catch(e) { console.error(e); }
+        };
+
+        // --- ПРОСМОТР И КОММЕНТАРИИ ---
         window.openPost = (id, postData) => {
             currentPostId = id;
             document.getElementById('feed-view').classList.add('hidden');
             document.getElementById('post-detail-view').style.display = 'block';
 
             const date = postData.timestamp ? new Date(postData.timestamp.seconds * 1000).toLocaleString() : '...';
+            
+            // Если пост Золотой - показываем кликер
+            let goldSection = "";
+            if(postData.type === 'golden') {
+                goldSection = `
+                    <div class="gold-event-area">
+                        <h3>🏆 ЗОЛОТОЙ ИВЕНТ 🏆</h3>
+                        <p>Собирайте золото всем сообществом!</p>
+                        <button class="gold-btn" onclick="mineGold('${id}')">СОБРАТЬ ЗОЛОТО</button>
+                        <span class="gold-counter" id="gold-counter-display">${postData.goldCount || 0}</span>
+                    </div>
+                `;
+                // Подписываемся на обновление счетчика золота в реальном времени
+                onSnapshot(doc(db, "posts", id), (doc) => {
+                    const el = document.getElementById('gold-counter-display');
+                    if(el && doc.exists()) el.innerText = doc.data().goldCount || 0;
+                });
+            }
+
             document.getElementById('detail-content').innerHTML = `
                 <div class="post-meta">Автор: ${escapeHtml(postData.author)} • ${date}</div>
                 <h2>${escapeHtml(postData.title)}</h2>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(postData.content)}</div>
+                ${goldSection}
             `;
             loadComments(id);
         };
@@ -262,30 +427,20 @@
         let unsubscribeComments = null;
         function loadComments(postId) {
             if (unsubscribeComments) unsubscribeComments();
-            const commentsRef = collection(db, "posts", postId, "comments");
-            const q = query(commentsRef, orderBy("timestamp", "asc"));
+            const q = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
             
             unsubscribeComments = onSnapshot(q, (snapshot) => {
                 const list = document.getElementById('comments-list');
                 list.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const c = doc.data();
-                    
-                    // Кнопка удаления комментария для админа
+                snapshot.forEach(docSnap => {
+                    const c = docSnap.data();
                     let delCommBtn = "";
-                    if(isAdmin) {
-                         // Теперь используем реальную функцию удаления
-                         delCommBtn = `<span style="color:red; cursor:pointer; font-size:0.7rem; margin-left:10px;" onclick="deleteComment('${postId}', '${doc.id}')">[X]</span>`;
+                    if(myRole === 'admin' || myRole === 'mod') {
+                         delCommBtn = `<span style="color:red; cursor:pointer; font-size:0.7rem; margin-left:10px;" onclick="deleteComment('${postId}', '${docSnap.id}')">[X]</span>`;
                     }
-
                     const div = document.createElement('div');
-                    div.style.borderLeft = "2px solid #ccc";
-                    div.style.paddingLeft = "1rem";
-                    div.style.marginBottom = "1rem";
-                    div.innerHTML = `
-                        <div style="font-weight:bold; font-size:0.8rem;">${escapeHtml(c.author)} ${delCommBtn}:</div>
-                        <div>${escapeHtml(c.text)}</div>
-                    `;
+                    div.style.borderLeft = "2px solid #ccc"; div.style.paddingLeft = "1rem"; div.style.marginBottom = "1rem";
+                    div.innerHTML = `<div style="font-weight:bold; font-size:0.8rem;">${escapeHtml(c.author)} ${delCommBtn}:</div><div>${escapeHtml(c.text)}</div>`;
                     list.appendChild(div);
                 });
             });
@@ -293,24 +448,19 @@
 
         window.addComment = async () => {
             if (!currentUser || !currentPostId) return;
+            if(isBanned || isMuted) return alert("Вы не можете комментировать.");
             const text = document.getElementById('comment-text').value;
             if (!text) return;
 
             await addDoc(collection(db, "posts", currentPostId, "comments"), {
-                author: currentUser.email,
-                text, timestamp: serverTimestamp()
+                author: currentUser.email, text, timestamp: serverTimestamp()
             });
             document.getElementById('comment-text').value = "";
         };
         
-        // Исправленная функция удаления комментария
         window.deleteComment = async (postId, commentId) => {
              if(!confirm("Удалить комментарий?")) return;
-             try {
-                await deleteDoc(doc(db, "posts", postId, "comments", commentId));
-             } catch (e) {
-                alert("Ошибка удаления: " + e.message);
-             }
+             try { await deleteDoc(doc(db, "posts", postId, "comments", commentId)); } catch (e) { alert(e.message); }
         };
 
         function escapeHtml(text) {
@@ -318,49 +468,20 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Тема и Снег
+        // --- ТЕМА И СНЕГ (Без изменений) ---
         const toggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-theme');
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-        });
+        toggleBtn.addEventListener('click', () => { body.classList.toggle('dark-theme'); localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light'); });
 
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
         let width, height, particles = [];
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        function initSnow() {
-            resize(); window.addEventListener('resize', resize);
-            for(let i=0; i<60; i++) particles.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()*50});
-            drawSnow();
-        }
+        function initSnow() { resize(); window.addEventListener('resize', resize); for(let i=0; i<60; i++) particles.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()*50}); drawSnow(); }
         let angle = 0;
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = body.classList.contains('dark-theme') ? "rgba(255,255,255,0.8)" : "rgba(100,100,100,0.3)";
-            ctx.beginPath();
-            for(let i=0; i<particles.length; i++) {
-                let p = particles[i];
-                ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
-            }
-            ctx.fill(); updateSnow(); requestAnimationFrame(drawSnow);
-        }
-        function updateSnow() {
-            angle += 0.01;
-            for(let i=0; i<particles.length; i++) {
-                let p = particles[i];
-                p.y += Math.cos(angle+p.d) + 1 + p.r/2; p.x += Math.sin(angle)*2;
-                if(p.x>width+5 || p.x<-5 || p.y>height) {
-                    if(i%3>0) particles[i] = {x: Math.random()*width, y: -10, r: p.r, d: p.d};
-                    else {
-                        if(Math.sin(angle)>0) particles[i] = {x: -5, y: Math.random()*height, r: p.r, d: p.d};
-                        else particles[i] = {x: width+5, y: Math.random()*height, r: p.r, d: p.d};
-                    }
-                }
-            }
-        }
+        function drawSnow() { ctx.clearRect(0, 0, width, height); ctx.fillStyle = body.classList.contains('dark-theme') ? "rgba(255,255,255,0.8)" : "rgba(100,100,100,0.3)"; ctx.beginPath(); for(let i=0; i<particles.length; i++) { let p = particles[i]; ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true); } ctx.fill(); updateSnow(); requestAnimationFrame(drawSnow); }
+        function updateSnow() { angle += 0.01; for(let i=0; i<particles.length; i++) { let p = particles[i]; p.y += Math.cos(angle+p.d) + 1 + p.r/2; p.x += Math.sin(angle)*2; if(p.x>width+5 || p.x<-5 || p.y>height) { if(i%3>0) particles[i] = {x: Math.random()*width, y: -10, r: p.r, d: p.d}; else { if(Math.sin(angle)>0) particles[i] = {x: -5, y: Math.random()*height, r: p.r, d: p.d}; else particles[i] = {x: width+5, y: Math.random()*height, r: p.r, d: p.d}; } } } }
         initSnow();
     </script>
 </body>
