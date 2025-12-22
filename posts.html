@@ -158,8 +158,8 @@
                 document.getElementById('auth-link').innerText = "Аккаунт";
                 document.getElementById('current-user-name').innerText = user.email;
 
-                // Проверка на админа (Хак для статического сайта)
-                if(user.email === "admin@gav.manka") {
+                // Проверка на админа (включая вариант "Admin Account" для согласованности)
+                if(user.email === "admin@gav.manka" || user.email === "Admin Account") {
                     isAdmin = true;
                 }
             } else {
@@ -170,7 +170,7 @@
                 document.getElementById('auth-link').innerText = "Вход";
                 isAdmin = false;
             }
-            // Перерисовываем посты (чтобы появились кнопки удаления если админ вошел)
+            // Перерисовываем посты (чтобы обновились кнопки удаления)
             initApp(); 
         });
 
@@ -274,6 +274,7 @@
                     // Кнопка удаления комментария для админа
                     let delCommBtn = "";
                     if(isAdmin) {
+                         // Теперь используем реальную функцию удаления
                          delCommBtn = `<span style="color:red; cursor:pointer; font-size:0.7rem; margin-left:10px;" onclick="deleteComment('${postId}', '${doc.id}')">[X]</span>`;
                     }
 
@@ -302,15 +303,14 @@
             document.getElementById('comment-text').value = "";
         };
         
-        // Удаление коммента
+        // Исправленная функция удаления комментария
         window.deleteComment = async (postId, commentId) => {
              if(!confirm("Удалить комментарий?")) return;
-             // В Firestore сложнее удалить из подколлекции без ссылки, но здесь мы знаем ID
-             // Логика требует doc ref, в простом JS SDK:
-             // await deleteDoc(doc(db, "posts", postId, "comments", commentId));
-             // Я не импортировал doc для подколлекций в main import, но должно сработать
-             // Для простоты оставим alert, т.к. полный код удаления коммента требует расширения импортов.
-             alert("Функция удаления комментариев пока в разработке (удаляйте весь пост!)"); 
+             try {
+                await deleteDoc(doc(db, "posts", postId, "comments", commentId));
+             } catch (e) {
+                alert("Ошибка удаления: " + e.message);
+             }
         };
 
         function escapeHtml(text) {
