@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Информация</title>
+    
+    <!-- ГЛАВНЫЙ СКРИПТ GOOGLE ADSENSE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
+     crossorigin="anonymous"></script>
+
     <style>
         body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; }
         body.dark-theme { background-color: #121212; color: #e0e0e0; }
@@ -28,12 +33,22 @@
         nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
         nav a.active { font-weight: bold; text-decoration: underline; }
 
-        /* Кнопка Посты */
         .nav-btn-posts {
-            color: #d32f2f !important; border: 2px solid #d32f2f; padding: 4px 10px; border-radius: 4px;
-            animation: pulse-btn 2s infinite; display: inline-flex; align-items: center; gap: 5px; font-weight: bold; text-decoration: none !important;
+            color: #d32f2f !important;
+            border: 2px solid #d32f2f;
+            padding: 4px 10px;
+            border-radius: 4px;
+            animation: pulse-btn 2s infinite;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            text-decoration: none !important;
         }
-        .nav-btn-posts:hover { background-color: #d32f2f; color: white !important; }
+        .nav-btn-posts:hover {
+            background-color: #d32f2f;
+            color: white !important;
+        }
         @keyframes pulse-btn {
             0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
             70% { box-shadow: 0 0 0 6px rgba(211, 47, 47, 0); }
@@ -59,7 +74,6 @@
         <a href="index.html">Главная</a>
         <a href="info.html" class="active">Информация</a>
         <a href="projects.html">Проекты</a>
-        <!-- Выделенная кнопка -->
         <a href="posts.html" class="nav-btn-posts">Посты 🔥</a>
         <a href="auth.html">Вход</a>
     </nav>
