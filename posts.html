@@ -9,9 +9,12 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
      crossorigin="anonymous"></script>
 
+    <!-- Подключаем праздничный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
     <style>
         /* --- СТИЛИ (База) --- */
-        body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; }
+        body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; padding-bottom: 80px; /* Отступ под липкий футер */ }
         body.dark-theme { background-color: #121212; color: #e0e0e0; }
         body.dark-theme nav { border-color: #e0e0e0; }
         body.dark-theme nav a { color: #e0e0e0; }
@@ -20,10 +23,10 @@
         body.dark-theme input, body.dark-theme textarea, body.dark-theme select { background-color: #222; color: #e0e0e0; border-color: #444; }
         body.dark-theme .admin-panel, body.dark-theme .modal-content { background-color: #2a2a2a; border-color: #555; }
         
-        @media (min-width: 768px) { body { padding: 3rem; } }
+        @media (min-width: 768px) { body { padding: 3rem; padding-bottom: 80px; } }
 
         .banner-wrapper { width: 100%; height: 250px; margin-bottom: 2rem; border: 2px solid black; overflow: hidden; position: relative; background-color: #f0f0f0; z-index: 1; }
-        .site-banner { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.5s ease; }
+        .site-banner { width: 100%; height: 100%; object-fit: cover; display: block; }
         @media (min-width: 768px) { .banner-wrapper { height: 350px; } }
 
         h1 { font-size: 2.5rem; margin: 0 0 1.5rem 0; font-weight: 700; }
@@ -56,19 +59,60 @@
         .post-card { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.2s; position: relative; }
         .post-card:hover { border-color: black; }
         .post-card.pinned { border: 2px solid #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); } 
-        /* Стиль для админ-чата */
         .post-card.admin-chat { border: 2px dashed red; opacity: 0.9; }
+
+        /* --- СТИЛИ ДЛЯ НОВОГОДНЕГО ПОСТА (В ЛЕНТЕ) --- */
+        .post-card.new-year {
+            background-color: #b71c1c; /* Красный */
+            border: 3px solid #ffca28; /* Золотой */
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(183, 28, 28, 0.5);
+            font-family: 'Lobster', cursive;
+        }
+        .post-card.new-year .post-title { font-size: 1.8rem; text-shadow: 1px 1px 0 #000; }
+        .post-card.new-year .post-meta { color: #ffecb3; }
+        .post-card.new-year button { border-color: white; }
+
+        /* --- СТИЛИ ДЛЯ ОТКРЫТОГО НОВОГОДНЕГО ПОСТА --- */
+        .new-year-detail-container {
+            background: linear-gradient(135deg, #880e4f, #b71c1c);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 4px dashed #ffca28;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .new-year-detail-container h2 {
+            font-family: 'Lobster', cursive;
+            font-size: 3rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+        }
+        .new-year-detail-container::before {
+            content: "❄️ 🎄 ❄️";
+            position: absolute; top: 10px; left: 0; right: 0;
+            text-align: center; font-size: 2rem; opacity: 0.5;
+        }
+        .new-year-comment {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ffca28 !important;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px !important;
+            color: #fff;
+        }
 
         .post-meta { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
         .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         
-        /* КНОПКИ УПРАВЛЕНИЯ */
         .controls-area { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 10; }
         .action-btn { border: none; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold; }
         .btn-del { background: red; }
         .btn-pin { background: gold; color: black; }
         .btn-edit { background: #2196F3; }
-        .btn-up { background: #4CAF50; } /* Зеленая кнопка UP */
+        .btn-up { background: #4CAF50; }
 
         .ad-container { margin: 1rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #ccc; text-align: center; min-height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         body.dark-theme .ad-container { background: #222; border-color: #444; }
@@ -76,7 +120,7 @@
 
         .admin-panel { border: 2px solid red; padding: 1rem; margin-bottom: 2rem; background: #fff0f0; display: none; }
         .admin-panel h3 { color: red; margin-top: 0; text-transform: uppercase; }
-        .user-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .user-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
 
         #post-detail-view { display: none; }
         .back-btn { display: inline-block; margin-bottom: 1rem; cursor: pointer; text-decoration: underline; }
@@ -91,20 +135,44 @@
         .temp-badge { color: orange; font-weight: bold; border: 1px solid orange; padding: 0 4px; font-size: 0.7rem; border-radius: 4px; }
         .admin-chat-badge { background: black; color: red; border: 1px solid red; font-weight: bold; padding: 2px 5px; font-size: 0.7rem; }
 
-        /* --- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 100;
-            display: flex; align-items: center; justify-content: center;
+        /* --- ЛИПКИЙ ФУТЕР ДЛЯ КОММЕНТАРИЕВ --- */
+        .sticky-comment-footer {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: white;
+            border-top: 2px solid black;
+            padding: 10px;
+            z-index: 50;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: none; /* Показываем только в открытом посте */
         }
-        .modal-content {
-            background: white; padding: 2rem; border: 2px solid black;
-            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+        body.dark-theme .sticky-comment-footer {
+            background: #1a1a1a;
+            border-top-color: #444;
         }
-        .advanced-section {
-            border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px;
-            display: none; /* Скрыто по умолчанию */
+        .comment-input-wrapper {
+            max-width: 50rem;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
         }
+        .sticky-input {
+            flex-grow: 1;
+            margin-bottom: 0;
+            height: 40px;
+            resize: none;
+        }
+        .sticky-btn {
+            width: auto;
+            margin-bottom: 0;
+            height: 40px;
+            padding: 0 20px;
+        }
+
+        /* --- МОДАЛЬНОЕ ОКНО --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 2rem; border: 2px solid black; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .advanced-section { border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -130,12 +198,10 @@
         <!-- АДМИН ПАНЕЛЬ -->
         <div id="admin-panel" class="admin-panel">
             <h3>Управление (Admin/Mod)</h3>
-            
-            <!-- Секция Управления Юзерами -->
-            <p style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">Пользователи:</p>
+            <p style="font-size:0.9rem">Назначение прав и наказаний по Email.</p>
             <div class="user-row">
-                <input type="email" id="manage-email" placeholder="Email пользователя" style="flex:1;">
-                <select id="manage-action" style="flex:1;">
+                <input type="email" id="manage-email" placeholder="Email пользователя">
+                <select id="manage-action">
                     <option value="set_admin">Сделать Админом</option>
                     <option value="set_mod">Сделать Модером</option>
                     <option value="set_vip">Сделать VIP (Фан)</option>
@@ -143,22 +209,9 @@
                     <option value="mute">Замутить (только чтение)</option>
                     <option value="clear">Снять все (Обычный юзер)</option>
                 </select>
-                <button class="btn-primary" onclick="manageUser()" style="width:auto;">OK</button>
+                <button class="btn-primary" onclick="manageUser()">OK</button>
             </div>
-
-            <!-- Секция Смены Баннера -->
-            <p style="font-size:0.9rem; font-weight:bold; margin-bottom:5px; margin-top:15px; border-top:1px dashed red; padding-top:10px;">Баннер сайта (Глобально):</p>
-            <div class="user-row">
-                <select id="banner-select" style="flex:2;">
-                    <option value="background.png">Стандартный (background.png)</option>
-                    <option value="background1.png">Фон 1 (background1.png)</option>
-                    <option value="background2.png">Фон 2 (background2.png)</option>
-                    <option value="background3.png">Фон 3 (background3.png)</option>
-                </select>
-                <button class="btn-primary" onclick="changeGlobalBanner()" style="width:auto;">Установить</button>
-            </div>
-
-            <div id="admin-status-msg" style="font-size:0.8rem; color:green; margin-top:10px;"></div>
+            <div id="admin-status-msg" style="font-size:0.8rem; color:green;"></div>
         </div>
 
         <!-- ЛЕНТА -->
@@ -181,10 +234,14 @@
                     </label>
                 </div>
 
-                <!-- Специальные опции для Админа при создании -->
+                <!-- АДМИН ОПЦИИ -->
                 <div id="admin-create-options" style="display:none; margin-bottom:1rem; border-top:1px dashed #ccc; padding-top:5px;">
-                     <label style="cursor:pointer; color:red; font-weight:bold; font-size:0.9rem;">
-                        <input type="checkbox" id="is-admin-chat"> 🔒 Чат для админов (скрытый)
+                     <label style="cursor:pointer; color:red; font-weight:bold; font-size:0.9rem; margin-right: 15px;">
+                        <input type="checkbox" id="is-admin-chat"> 🔒 Чат для админов
+                    </label>
+                    <!-- НОВЫЙ ГОД -->
+                    <label style="cursor:pointer; color:#b71c1c; font-weight:bold; font-size:0.9rem; font-family:'Lobster', cursive;">
+                        <input type="checkbox" id="is-new-year"> 🎄 Новый Год!
                     </label>
                 </div>
 
@@ -203,15 +260,22 @@
         <!-- ДЕТАЛИ ПОСТА -->
         <div id="post-detail-view">
             <span class="back-btn" onclick="closePost()">← Назад к ленте</span>
+            
             <div id="detail-content"></div>
+            
             <div class="comment-section" style="margin-top:2rem; border-top:1px solid #ccc;">
-                <h3>Комментарии</h3>
-                <div id="comment-form-container" class="create-post-form hidden" style="border:1px dashed #ccc; background:transparent;">
-                    <textarea id="comment-text" rows="2" placeholder="Ваш комментарий..."></textarea>
-                    <button class="btn-primary" onclick="addComment()">Отправить</button>
-                </div>
-                <div id="comments-list"></div>
+                <h3 id="comments-header">Комментарии</h3>
+                <!-- Список комментариев (Форма теперь внизу, в липком футере) -->
+                <div id="comments-list" style="margin-bottom: 50px;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- ЛИПКИЙ ФУТЕР КОММЕНТАРИЕВ -->
+    <div id="sticky-comment-footer" class="sticky-comment-footer">
+        <div class="comment-input-wrapper">
+            <input type="text" id="sticky-comment-text" class="sticky-input" placeholder="Написать комментарий..." autocomplete="off">
+            <button class="btn-primary sticky-btn" onclick="addComment()">📤</button>
         </div>
     </div>
 
@@ -224,22 +288,22 @@
             <label>Текст:</label>
             <textarea id="edit-content" rows="5"></textarea>
             
-            <!-- ADVANCED EDITOR (Только для Админов/Модеров) -->
             <div id="advanced-edit-section" class="advanced-section">
                 <div style="margin-bottom: 10px;">
                     <label style="font-weight:bold;">Цвет поста:</label>
                     <input type="color" id="edit-color" style="width:50px; padding:0; height:30px; border:none; vertical-align:middle;">
-                    <span style="font-size:0.8rem; color:#666;">(Только для стаффа)</span>
                 </div>
-
                 <label style="display:block; margin-bottom:5px;">
                     <input type="checkbox" id="edit-pinned"> 📌 Закрепить пост
                 </label>
                 <label style="display:block; margin-bottom:5px;">
                     <input type="checkbox" id="edit-temporary"> ⏳ Временный (24ч)
                 </label>
-                <label style="display:block; margin-bottom:10px; color:red; font-weight:bold;">
+                <label style="display:block; margin-bottom:5px; color:red; font-weight:bold;">
                     <input type="checkbox" id="edit-admin-chat"> 🔒 Чат для админов?
+                </label>
+                <label style="display:block; margin-bottom:10px; color:#b71c1c; font-weight:bold; font-family:'Lobster', cursive;">
+                    <input type="checkbox" id="edit-new-year"> 🎄 Новый Год?
                 </label>
             </div>
 
@@ -255,7 +319,6 @@
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, doc, deleteDoc, updateDoc, setDoc, getDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ВАШ КОНФИГ
         const firebaseConfig = {
           apiKey: "AIzaSyBj0O4Td-w4Dm2ii5S2Rg8pvAnzbY1C6Rw",
           authDomain: "gavmanka-879a8.firebaseapp.com",
@@ -287,17 +350,6 @@
             if (currentUser) initPosts();
         });
 
-        // Слушатель настроек (БАННЕР)
-        onSnapshot(doc(db, "settings", "global"), (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if (data.currentBanner) {
-                    const bannerImg = document.querySelector('.site-banner');
-                    if(bannerImg) bannerImg.src = data.currentBanner;
-                }
-            }
-        });
-
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             if (user) {
@@ -326,10 +378,10 @@
                 if (userDocUnsub) userDocUnsub(); 
                 myRole = 'user'; isBanned = false; isMuted = false;
                 document.getElementById('post-form-container').classList.add('hidden');
-                document.getElementById('comment-form-container').classList.add('hidden');
                 document.getElementById('guest-msg').classList.remove('hidden');
                 document.getElementById('admin-panel').style.display = 'none';
                 document.getElementById('auth-link').innerText = "Вход";
+                document.getElementById('sticky-comment-footer').style.display = 'none'; // Скрываем футер если не в посте
                 initPosts();
             }
         });
@@ -337,26 +389,20 @@
         function applyPermissions() {
             if(isBanned) {
                 document.getElementById('post-form-container').classList.add('hidden');
-                document.getElementById('comment-form-container').classList.add('hidden');
+                document.getElementById('sticky-comment-footer').style.display = 'none';
                 const banMsg = document.getElementById('guest-msg');
                 banMsg.innerText = "ВЫ ЗАБАНЕНЫ! Доступ только для чтения.";
-                banMsg.style.color = "red";
-                banMsg.style.fontWeight = "bold";
                 banMsg.classList.remove('hidden');
                 return;
             } else {
                 const banMsg = document.getElementById('guest-msg');
-                if (currentUser) {
-                    banMsg.classList.add('hidden');
-                } else {
+                if (currentUser) banMsg.classList.add('hidden');
+                else {
                     banMsg.innerHTML = '<a href="auth.html">Войдите</a>, чтобы писать.';
-                    banMsg.style.color = "";
                 }
             }
 
             document.getElementById('post-form-container').classList.remove('hidden');
-            document.getElementById('comment-form-container').classList.remove('hidden');
-
             const badgeHTML = getBadgeHTML(myRole);
             document.getElementById('user-badges').innerHTML = badgeHTML;
 
@@ -376,8 +422,6 @@
             return '';
         }
 
-        // --- ФУНКЦИИ АДМИН ПАНЕЛИ ---
-        
         window.manageUser = async () => {
             if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет доступа!");
             const emailInput = document.getElementById('manage-email');
@@ -404,16 +448,6 @@
             } catch(e) { alert("Ошибка: " + e.message); }
         };
 
-        window.changeGlobalBanner = async () => {
-            if(myRole !== 'admin') return alert("Только Админ может менять баннер!");
-            const selectedBanner = document.getElementById('banner-select').value;
-            try {
-                await setDoc(doc(db, "settings", "global"), { currentBanner: selectedBanner }, { merge: true });
-                alert("Баннер обновлен!");
-            } catch(e) { alert("Ошибка: " + e.message); }
-        };
-
-        // --- РЕДАКТИРОВАНИЕ ---
         let currentPostsCache = {}; 
 
         window.openEditModal = (postId) => {
@@ -429,6 +463,7 @@
                 document.getElementById('edit-pinned').checked = post.isPinned || false;
                 document.getElementById('edit-temporary').checked = post.isTemporary || false;
                 document.getElementById('edit-admin-chat').checked = post.isAdminChat || false;
+                document.getElementById('edit-new-year').checked = post.isNewYear || false;
                 document.getElementById('edit-color').value = post.color || '#ffffff';
             } else {
                 document.getElementById('advanced-edit-section').style.display = 'none';
@@ -453,6 +488,7 @@
                 updates.isPinned = document.getElementById('edit-pinned').checked;
                 updates.isTemporary = document.getElementById('edit-temporary').checked;
                 updates.isAdminChat = document.getElementById('edit-admin-chat').checked;
+                updates.isNewYear = document.getElementById('edit-new-year').checked;
                 updates.color = document.getElementById('edit-color').value;
             }
 
@@ -462,7 +498,6 @@
             } catch (e) { alert("Ошибка: " + e.message); }
         };
 
-        // --- ПОСТЫ ---
         let postsUnsub = null;
         function initPosts() {
             if (postsUnsub) postsUnsub();
@@ -492,18 +527,13 @@
                 const now = Date.now();
 
                 posts.forEach((post, index) => {
-                    // 1. Фильтр Временных постов
                     if(post.isTemporary) {
                         const postTime = post.timestamp ? post.timestamp.seconds * 1000 : now;
                         if (now - postTime > 86400000) return;
                     }
 
-                    // 2. Фильтр Чат для админов (Секретный)
-                    if (post.isAdminChat && myRole !== 'admin' && myRole !== 'mod') {
-                        return; // Обычные юзеры не видят этот пост
-                    }
+                    if (post.isAdminChat && myRole !== 'admin' && myRole !== 'mod') return; 
 
-                    // 3. Реклама
                     if (index > 0 && index % 3 === 0) {
                         const adDiv = document.createElement('div');
                         adDiv.className = 'ad-container';
@@ -518,16 +548,16 @@
                         try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { }
                     }
 
+                    // CLASS LOGIC
+                    let classes = `post-card ${post.isPinned ? 'pinned' : ''} ${post.isAdminChat ? 'admin-chat' : ''} ${post.isNewYear ? 'new-year' : ''}`;
                     const div = document.createElement('div');
-                    div.className = `post-card ${post.isPinned ? 'pinned' : ''} ${post.isAdminChat ? 'admin-chat' : ''}`;
+                    div.className = classes;
                     
-                    // ПРИМЕНЕНИЕ ЦВЕТА
-                    if (post.color && post.color !== '#ffffff') {
+                    if (post.color && post.color !== '#ffffff' && !post.isNewYear) {
                         div.style.backgroundColor = post.color;
                         div.style.borderColor = "black";
                     }
 
-                    // Кнопки
                     let controlsHTML = "";
                     const isOwner = currentUser && currentUser.email === post.author;
                     const isStaff = myRole === 'admin' || myRole === 'mod';
@@ -537,7 +567,6 @@
                     }
 
                     if (isStaff) {
-                        // Кнопка UP (Сделать активным)
                         controlsHTML += `<button class="action-btn btn-up" onclick="event.stopPropagation(); bumpPost('${post.id}')">UP 🚀</button>`;
                         controlsHTML += `<button class="action-btn btn-pin" onclick="event.stopPropagation(); togglePin('${post.id}', ${post.isPinned})">${post.isPinned ? 'Unpin' : '📌'}</button>`;
                         controlsHTML += `<button class="action-btn btn-del" onclick="event.stopPropagation(); deletePost('${post.id}')">DEL</button>`;
@@ -549,6 +578,7 @@
                     const titlePrefix = post.isPinned ? "📌 " : "";
                     const tempBadge = post.isTemporary ? '<span class="temp-badge">⏳ 24h</span>' : "";
                     const adminChatBadge = post.isAdminChat ? '<span class="admin-chat-badge">🔒 ADMIN CHAT</span>' : "";
+                    const nyBadge = post.isNewYear ? '🎄 ' : '';
 
                     const realRole = allUserRoles[post.author] || post.role || 'user';
                     const roleBadge = getBadgeHTML(realRole);
@@ -556,7 +586,7 @@
                     div.innerHTML = `
                         ${controlsHTML}
                         <div class="post-meta">Автор: ${escapeHtml(post.author)} ${roleBadge} • ${date} ${tempBadge} ${adminChatBadge}</div>
-                        <div class="post-title">${titlePrefix}${escapeHtml(post.title)}</div>
+                        <div class="post-title">${nyBadge}${titlePrefix}${escapeHtml(post.title)}</div>
                         <div class="post-preview">${escapeHtml(post.content).substring(0, 100)}...</div>
                     `;
                     div.onclick = (e) => openPost(post.id, post);
@@ -572,10 +602,11 @@
             const content = document.getElementById('new-post-content').value;
             const isTemporary = document.getElementById('is-temporary').checked;
             
-            // Админские опции при создании
             let isAdminChat = false;
+            let isNewYear = false;
             if (myRole === 'admin' || myRole === 'mod') {
                 isAdminChat = document.getElementById('is-admin-chat').checked;
+                isNewYear = document.getElementById('is-new-year').checked;
             }
 
             if (!title || !content) return alert("Заполните поля!");
@@ -586,12 +617,14 @@
                     title, content, timestamp: serverTimestamp(), 
                     isPinned: false, 
                     isTemporary: isTemporary,
-                    isAdminChat: isAdminChat
+                    isAdminChat: isAdminChat,
+                    isNewYear: isNewYear
                 });
                 document.getElementById('new-post-title').value = "";
                 document.getElementById('new-post-content').value = "";
                 document.getElementById('is-temporary').checked = false;
                 if(document.getElementById('is-admin-chat')) document.getElementById('is-admin-chat').checked = false;
+                if(document.getElementById('is-new-year')) document.getElementById('is-new-year').checked = false;
             } catch (e) { alert("Ошибка: " + e.message); }
         };
 
@@ -606,12 +639,10 @@
             try { await updateDoc(doc(db, "posts", id), { isPinned: !currentStatus }); } catch (e) { alert(e.message); }
         };
 
-        // --- НОВАЯ ФУНКЦИЯ: ПОДНЯТЬ ПОСТ (Сделать Активным) ---
         window.bumpPost = async (id) => {
             if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет прав!");
             try { 
                 await updateDoc(doc(db, "posts", id), { timestamp: serverTimestamp() }); 
-                // Не нужен алерт, пост сам прыгнет вверх
             } catch (e) { alert(e.message); }
         };
 
@@ -619,41 +650,56 @@
             currentPostId = id;
             document.getElementById('feed-view').classList.add('hidden');
             document.getElementById('post-detail-view').style.display = 'block';
+            
+            // Если мы не забанены и залогинены, показываем липкий футер
+            if(currentUser && !isBanned) {
+                document.getElementById('sticky-comment-footer').style.display = 'block';
+            } else {
+                document.getElementById('sticky-comment-footer').style.display = 'none';
+            }
+
             const date = postData.timestamp ? new Date(postData.timestamp.seconds * 1000).toLocaleString() : '...';
             
             const realRole = allUserRoles[postData.author] || postData.role || 'user';
             const roleBadge = getBadgeHTML(realRole);
-            const tempBadge = postData.isTemporary ? '<span class="temp-badge">⏳ 24h</span>' : "";
+            const tempBadge = postData.isTemporary ? '<span class="temp-badge">⏳ ИСЧЕЗНЕТ ЧЕРЕЗ 24 ЧАСА</span>' : "";
             const adminChatBadge = postData.isAdminChat ? '<span class="admin-chat-badge">🔒 ADMIN CHAT</span>' : "";
 
-            document.getElementById('detail-content').innerHTML = `
+            const detailContainer = document.getElementById('detail-content');
+            
+            // Сброс классов
+            detailContainer.className = '';
+            detailContainer.style = ''; // Reset inline styles
+
+            if (postData.isNewYear) {
+                detailContainer.className = 'new-year-detail-container';
+            }
+
+            detailContainer.innerHTML = `
                 <div class="post-meta">Автор: ${escapeHtml(postData.author)} ${roleBadge} • ${date} ${tempBadge} ${adminChatBadge}</div>
                 <h2>${escapeHtml(postData.title)}</h2>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(postData.content)}</div>
             `;
             
-            // Применяем цвет фона к детальному просмотру тоже, если нужно
-            if (postData.color && postData.color !== '#ffffff') {
-                document.getElementById('detail-content').style.backgroundColor = postData.color;
-                document.getElementById('detail-content').style.padding = "10px";
-                document.getElementById('detail-content').style.borderRadius = "5px";
-                document.getElementById('detail-content').style.border = "1px solid black";
-            } else {
-                document.getElementById('detail-content').style.backgroundColor = "";
-                document.getElementById('detail-content').style.border = "";
+            if (postData.color && postData.color !== '#ffffff' && !postData.isNewYear) {
+                detailContainer.style.backgroundColor = postData.color;
+                detailContainer.style.padding = "10px";
+                detailContainer.style.borderRadius = "5px";
+                detailContainer.style.border = "1px solid black";
             }
 
-            loadComments(id);
+            loadComments(id, postData.isNewYear);
         };
 
         window.closePost = () => {
             currentPostId = null;
             document.getElementById('feed-view').classList.remove('hidden');
             document.getElementById('post-detail-view').style.display = 'none';
+            document.getElementById('sticky-comment-footer').style.display = 'none';
         };
 
         let unsubscribeComments = null;
-        function loadComments(postId) {
+        function loadComments(postId, isNewYearPost) {
             if (unsubscribeComments) unsubscribeComments();
             const q = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
             unsubscribeComments = onSnapshot(q, (snapshot) => {
@@ -669,8 +715,16 @@
                     if(myRole === 'admin' || myRole === 'mod') {
                          delCommBtn = `<span style="color:red; cursor:pointer; font-size:0.7rem; margin-left:10px;" onclick="deleteComment('${postId}', '${docSnap.id}')">[X]</span>`;
                     }
+                    
                     const div = document.createElement('div');
-                    div.style.borderLeft = "2px solid #ccc"; div.style.paddingLeft = "1rem"; div.style.marginBottom = "1rem";
+                    if (isNewYearPost) {
+                        div.className = 'new-year-comment';
+                    } else {
+                        div.style.borderLeft = "2px solid #ccc"; 
+                        div.style.paddingLeft = "1rem"; 
+                        div.style.marginBottom = "1rem";
+                    }
+
                     div.innerHTML = `
                         <div style="font-weight:bold; font-size:0.8rem;">
                             ${escapeHtml(c.author)} 
@@ -687,7 +741,10 @@
         window.addComment = async () => {
             if (!currentUser || !currentPostId) return;
             if(isBanned || isMuted) return alert("Вы не можете комментировать.");
-            const text = document.getElementById('comment-text').value;
+            
+            // Берем текст из липкого футера
+            const input = document.getElementById('sticky-comment-text');
+            const text = input.value;
             if (!text) return;
             
             await addDoc(collection(db, "posts", currentPostId, "comments"), { 
@@ -696,7 +753,7 @@
                 timestamp: serverTimestamp(),
                 role: myRole 
             });
-            document.getElementById('comment-text').value = "";
+            input.value = "";
         };
         
         window.deleteComment = async (postId, commentId) => {
