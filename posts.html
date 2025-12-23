@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Посты</title>
     
-    <!-- ========================================== -->
     <!-- ГЛАВНЫЙ СКРИПТ GOOGLE ADSENSE -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
      crossorigin="anonymous"></script>
-    <!-- ========================================== -->
 
     <style>
         /* --- СТИЛИ (База) --- */
@@ -30,14 +28,25 @@
 
         h1 { font-size: 2.5rem; margin: 0 0 1.5rem 0; font-weight: 700; }
         h1 a { text-decoration: none; color: black; }
-        nav { border-top: 2px solid black; border-bottom: 2px solid black; padding: 0.75rem 0; margin-bottom: 2.5rem; display: flex; gap: 2rem; }
+        nav { border-top: 2px solid black; border-bottom: 2px solid black; padding: 0.75rem 0; margin-bottom: 2.5rem; display: flex; gap: 2rem; align-items: center; }
         nav a { font-size: 1.25rem; color: black; text-decoration: none; font-weight: 500; }
         nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
         nav a.active { font-weight: bold; text-decoration: underline; }
 
+        /* Кнопка Посты */
+        .nav-btn-posts {
+            color: #d32f2f !important; border: 2px solid #d32f2f; padding: 4px 10px; border-radius: 4px;
+            animation: pulse-btn 2s infinite; display: inline-flex; align-items: center; gap: 5px; font-weight: bold; text-decoration: none !important;
+        }
+        .nav-btn-posts:hover { background-color: #d32f2f; color: white !important; }
+        @keyframes pulse-btn {
+            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(211, 47, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        }
+
         .content { max-width: 50rem; position: relative; z-index: 10; }
         
-        /* --- ФОРМЫ И ПОСТЫ --- */
         .create-post-form { border: 2px solid black; padding: 1rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); }
         input, textarea, select { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; background: transparent; }
         button.btn-primary { background: black; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; font-family: inherit; font-weight: bold; }
@@ -48,32 +57,18 @@
         .post-card:hover { border-color: black; }
         .post-card.pinned { border: 2px solid #d4af37; background: rgba(212, 175, 55, 0.05); } 
 
-        .post-meta { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem; }
+        .post-meta { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
         .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         
-        /* --- АДМИНСКИЕ КНОПКИ --- */
         .admin-controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 10; }
         .action-btn { border: none; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold; }
         .btn-del { background: red; }
         .btn-pin { background: gold; color: black; }
 
-        /* --- РЕКЛАМНЫЙ БЛОК --- */
-        .ad-container {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f9f9f9;
-            border: 1px dashed #ccc;
-            text-align: center;
-            min-height: 280px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+        .ad-container { margin: 1rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #ccc; text-align: center; min-height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         body.dark-theme .ad-container { background: #222; border-color: #444; }
         .ad-placeholder-text { font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; }
 
-        /* --- АДМИН ПАНЕЛЬ --- */
         .admin-panel { border: 2px solid red; padding: 1rem; margin-bottom: 2rem; background: #fff0f0; display: none; }
         .admin-panel h3 { color: red; margin-top: 0; text-transform: uppercase; }
         .user-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; align-items: center; }
@@ -84,10 +79,11 @@
         #theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 2px solid black; padding: 0.5rem; cursor: pointer; z-index: 20; }
         #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         
-        .role-badge { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; font-weight: bold; vertical-align: middle; }
-        .badge-admin { background: red; color: white; }
-        .badge-mod { background: blue; color: white; }
+        .role-badge { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; text-transform: uppercase; font-weight: bold; display: inline-block; vertical-align: middle; }
+        .badge-admin { background: red; color: white; border: 1px solid darkred; }
+        .badge-mod { background: blue; color: white; border: 1px solid darkblue; }
         .badge-vip { background: linear-gradient(90deg, #9C27B0, #E040FB); color: white; border: 1px solid gold; box-shadow: 0 0 5px gold; }
+        .temp-badge { color: orange; font-weight: bold; border: 1px solid orange; padding: 0 4px; font-size: 0.7rem; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -104,7 +100,8 @@
         <a href="index.html">Главная</a>
         <a href="info.html">Информация</a>
         <a href="projects.html">Проекты</a>
-        <a href="posts.html" class="active">Посты</a>
+        <!-- Выделенная кнопка -->
+        <a href="posts.html" class="active nav-btn-posts">Посты 🔥</a>
         <a href="auth.html" id="auth-link">Вход</a>
     </nav>
 
@@ -141,6 +138,14 @@
                 </div>
                 <input type="text" id="new-post-title" placeholder="Заголовок темы">
                 <textarea id="new-post-content" rows="3" placeholder="О чем хотите рассказать?"></textarea>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" id="is-temporary"> 
+                        ⏳ Временное обсуждение (удалится через 24ч)
+                    </label>
+                </div>
+
                 <button class="btn-primary" onclick="createPost()">Опубликовать</button>
             </div>
 
@@ -170,7 +175,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, doc, deleteDoc, updateDoc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, doc, deleteDoc, updateDoc, setDoc, getDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // ВАШ КОНФИГ
@@ -193,6 +198,15 @@
         let isBanned = false;
         let isMuted = false;
         let currentPostId = null;
+        let allUserRoles = {}; 
+
+        // Загрузка ролей
+        const rolesQuery = query(collection(db, "users"), where("role", "in", ["admin", "mod", "vip"]));
+        onSnapshot(rolesQuery, (snapshot) => {
+            allUserRoles = {};
+            snapshot.forEach(doc => { allUserRoles[doc.id] = doc.data().role; });
+            if (currentUser) initPosts();
+        });
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
@@ -234,11 +248,8 @@
             document.getElementById('post-form-container').classList.remove('hidden');
             document.getElementById('comment-form-container').classList.remove('hidden');
 
-            let badges = "";
-            if(myRole === 'admin') badges += '<span class="role-badge badge-admin">ADMIN</span>';
-            if(myRole === 'mod') badges += '<span class="role-badge badge-mod">MOD</span>';
-            if(myRole === 'vip') badges += '<span class="role-badge badge-vip">VIP</span>';
-            document.getElementById('user-badges').innerHTML = badges;
+            const badgeHTML = getBadgeHTML(myRole);
+            document.getElementById('user-badges').innerHTML = badgeHTML;
 
             if(myRole === 'admin' || myRole === 'mod') {
                 document.getElementById('admin-panel').style.display = 'block';
@@ -247,11 +258,20 @@
             }
         }
 
+        function getBadgeHTML(role) {
+            if (role === 'admin') return '<span class="role-badge badge-admin">ADMIN</span>';
+            if (role === 'mod') return '<span class="role-badge badge-mod">MOD</span>';
+            if (role === 'vip') return '<span class="role-badge badge-vip">VIP</span>';
+            return '';
+        }
+
         window.manageUser = async () => {
             if(myRole !== 'admin' && myRole !== 'mod') return alert("Нет доступа!");
-            const email = document.getElementById('manage-email').value.trim();
+            const emailInput = document.getElementById('manage-email');
+            const email = emailInput.value.trim();
             const action = document.getElementById('manage-action').value;
             const statusMsg = document.getElementById('admin-status-msg');
+            
             if(!email) return alert("Введите Email!");
             if(myRole === 'mod' && (action === 'set_admin' || action === 'ban')) return alert("Модераторы могут только мутить/VIP.");
 
@@ -266,14 +286,18 @@
             try {
                 await setDoc(doc(db, "users", email), updates, { merge: true });
                 statusMsg.innerText = `Успешно: ${email} -> ${action}`;
+                emailInput.value = "";
                 setTimeout(() => statusMsg.innerText = "", 3000);
             } catch(e) { alert("Ошибка: " + e.message); }
         };
 
         // --- ПОСТЫ И РЕКЛАМА ---
+        let postsUnsub = null;
         function initPosts() {
+            if (postsUnsub) postsUnsub();
+            
             const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snapshot) => {
+            postsUnsub = onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('posts-container');
                 container.innerHTML = "";
                 let posts = [];
@@ -287,14 +311,18 @@
 
                 if (posts.length === 0) { container.innerHTML = "<p>Пока нет постов.</p>"; return; }
 
+                const now = Date.now();
+
                 posts.forEach((post, index) => {
-                    // ВСТАВКА РЕКЛАМЫ (Чередование)
+                    if(post.isTemporary) {
+                        const postTime = post.timestamp ? post.timestamp.seconds * 1000 : now;
+                        if (now - postTime > 86400000) return;
+                    }
+
                     if (index > 0 && index % 3 === 0) {
                         const adDiv = document.createElement('div');
                         adDiv.className = 'ad-container';
-                        
                         let adHTML = '';
-                        // После 6, 12, 18 постов - MULTIPLEX
                         if (index % 6 === 0) {
                             adHTML = `
                                 <div style="width:100%; text-align:center">
@@ -306,7 +334,6 @@
                                          data-ad-slot="7944668033"></ins>
                                 </div>`;
                         } else {
-                            // После 3, 9, 15 постов - DISPLAY
                             adHTML = `
                                 <div style="width:100%; text-align:center">
                                     <div class="ad-placeholder-text">Реклама Google</div>
@@ -318,12 +345,9 @@
                                          data-full-width-responsive="true"></ins>
                                 </div>`;
                         }
-                        
                         adDiv.innerHTML = adHTML;
                         container.appendChild(adDiv);
-                        
-                        // Безопасный запуск рекламы
-                        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { console.log('Waiting for ad approval...'); }
+                        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) { }
                     }
 
                     const div = document.createElement('div');
@@ -341,10 +365,14 @@
 
                     const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleDateString() : '...';
                     const titlePrefix = post.isPinned ? "📌 " : "";
+                    const tempBadge = post.isTemporary ? '<span class="temp-badge">⏳ 24h</span>' : "";
+
+                    const realRole = allUserRoles[post.author] || post.role || 'user';
+                    const roleBadge = getBadgeHTML(realRole);
                     
                     div.innerHTML = `
                         ${adminControls}
-                        <div class="post-meta">Автор: ${escapeHtml(post.author)} • ${date}</div>
+                        <div class="post-meta">Автор: ${escapeHtml(post.author)} ${roleBadge} • ${date} ${tempBadge}</div>
                         <div class="post-title">${titlePrefix}${escapeHtml(post.title)}</div>
                         <div class="post-preview">${escapeHtml(post.content).substring(0, 100)}...</div>
                     `;
@@ -359,13 +387,18 @@
             if(isBanned || isMuted) return alert("Вам запрещено публиковать посты.");
             const title = document.getElementById('new-post-title').value;
             const content = document.getElementById('new-post-content').value;
+            const isTemporary = document.getElementById('is-temporary').checked;
+
             if (!title || !content) return alert("Заполните поля!");
             try {
                 await addDoc(collection(db, "posts"), {
-                    author: currentUser.email, title, content, timestamp: serverTimestamp(), isPinned: false
+                    author: currentUser.email, 
+                    role: myRole,
+                    title, content, timestamp: serverTimestamp(), isPinned: false, isTemporary: isTemporary 
                 });
                 document.getElementById('new-post-title').value = "";
                 document.getElementById('new-post-content').value = "";
+                document.getElementById('is-temporary').checked = false;
             } catch (e) { alert("Ошибка: " + e.message); }
         };
 
@@ -385,8 +418,13 @@
             document.getElementById('feed-view').classList.add('hidden');
             document.getElementById('post-detail-view').style.display = 'block';
             const date = postData.timestamp ? new Date(postData.timestamp.seconds * 1000).toLocaleString() : '...';
+            
+            const realRole = allUserRoles[postData.author] || postData.role || 'user';
+            const roleBadge = getBadgeHTML(realRole);
+            const tempBadge = postData.isTemporary ? '<span class="temp-badge">⏳ ИСЧЕЗНЕТ ЧЕРЕЗ 24 ЧАСА</span>' : "";
+
             document.getElementById('detail-content').innerHTML = `
-                <div class="post-meta">Автор: ${escapeHtml(postData.author)} • ${date}</div>
+                <div class="post-meta">Автор: ${escapeHtml(postData.author)} ${roleBadge} • ${date} ${tempBadge}</div>
                 <h2>${escapeHtml(postData.title)}</h2>
                 <div style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(postData.content)}</div>
             `;
@@ -409,11 +447,8 @@
                 snapshot.forEach(docSnap => {
                     const c = docSnap.data();
                     
-                    // Генерируем бейджик для автора комментария
-                    let badgeHTML = "";
-                    if (c.role === 'admin') badgeHTML = '<span class="role-badge badge-admin">ADMIN</span>';
-                    else if (c.role === 'mod') badgeHTML = '<span class="role-badge badge-mod">MOD</span>';
-                    else if (c.role === 'vip') badgeHTML = '<span class="role-badge badge-vip">VIP</span>';
+                    const realRole = allUserRoles[c.author] || c.role || 'user';
+                    const badgeHTML = getBadgeHTML(realRole);
 
                     let delCommBtn = "";
                     if(myRole === 'admin' || myRole === 'mod') {
@@ -440,17 +475,11 @@
             const text = document.getElementById('comment-text').value;
             if (!text) return;
             
-            // Сохраняем текущую роль пользователя вместе с комментарием
-            let roleToSave = 'user';
-            if (myRole === 'admin' || myRole === 'mod' || myRole === 'vip') {
-                roleToSave = myRole;
-            }
-
             await addDoc(collection(db, "posts", currentPostId, "comments"), { 
                 author: currentUser.email, 
                 text, 
                 timestamp: serverTimestamp(),
-                role: roleToSave 
+                role: myRole 
             });
             document.getElementById('comment-text').value = "";
         };
