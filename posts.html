@@ -211,7 +211,7 @@
             
             <!-- ADVANCED EDITOR (Только для Админов/Модеров) -->
             <div id="advanced-edit-section" class="advanced-section">
-                <!-- Убран заголовок "Advanced Options" -->
+                <!-- Убран выбор Типа Поста -->
                 
                 <div style="margin-bottom: 10px;">
                     <label style="font-weight:bold;">Цвет поста:</label>
@@ -228,14 +228,6 @@
                 <label style="display:block; margin-bottom:10px; color:red; font-weight:bold;">
                     <input type="checkbox" id="edit-admin-chat"> 🔒 Чат для админов?
                 </label>
-
-                <label>Тип поста:</label>
-                <select id="edit-type">
-                    <option value="normal">Обычный</option>
-                    <option value="golden">🏆 Золотой</option>
-                    <option value="roulette">💀 Рулетка</option>
-                    <option value="flappy">🍆 Flappy</option>
-                </select>
             </div>
 
             <div style="display:flex; gap:10px; margin-top:1rem;">
@@ -401,7 +393,6 @@
                 document.getElementById('edit-pinned').checked = post.isPinned || false;
                 document.getElementById('edit-temporary').checked = post.isTemporary || false;
                 document.getElementById('edit-admin-chat').checked = post.isAdminChat || false;
-                document.getElementById('edit-type').value = post.type || 'normal';
                 document.getElementById('edit-color').value = post.color || '#ffffff';
             } else {
                 document.getElementById('advanced-edit-section').style.display = 'none';
@@ -426,7 +417,6 @@
                 updates.isPinned = document.getElementById('edit-pinned').checked;
                 updates.isTemporary = document.getElementById('edit-temporary').checked;
                 updates.isAdminChat = document.getElementById('edit-admin-chat').checked;
-                updates.type = document.getElementById('edit-type').value;
                 updates.color = document.getElementById('edit-color').value;
             }
 
