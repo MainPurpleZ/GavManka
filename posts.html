@@ -18,7 +18,7 @@
         body.dark-theme h1 a { color: #e0e0e0; }
         body.dark-theme .post-card, body.dark-theme .comment-card { border-color: #444; background-color: #1a1a1a; }
         body.dark-theme input, body.dark-theme textarea, body.dark-theme select { background-color: #222; color: #e0e0e0; border-color: #444; }
-        body.dark-theme .admin-panel { background-color: #2a2a2a; border-color: #555; }
+        body.dark-theme .admin-panel, body.dark-theme .modal-content { background-color: #2a2a2a; border-color: #555; }
         
         @media (min-width: 768px) { body { padding: 3rem; } }
 
@@ -60,10 +60,12 @@
         .post-meta { font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
         .post-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
         
-        .admin-controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 10; }
+        /* КНОПКИ УПРАВЛЕНИЯ */
+        .controls-area { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; z-index: 10; }
         .action-btn { border: none; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold; }
         .btn-del { background: red; }
         .btn-pin { background: gold; color: black; }
+        .btn-edit { background: #2196F3; }
 
         .ad-container { margin: 1rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #ccc; text-align: center; min-height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         body.dark-theme .ad-container { background: #222; border-color: #444; }
@@ -84,6 +86,21 @@
         .badge-mod { background: blue; color: white; border: 1px solid darkblue; }
         .badge-vip { background: linear-gradient(90deg, #9C27B0, #E040FB); color: white; border: 1px solid gold; box-shadow: 0 0 5px gold; }
         .temp-badge { color: orange; font-weight: bold; border: 1px solid orange; padding: 0 4px; font-size: 0.7rem; border-radius: 4px; }
+
+        /* --- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 2rem; border: 2px solid black;
+            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+        }
+        .advanced-section {
+            border: 1px dashed red; padding: 10px; margin: 10px 0;
+            display: none; /* Скрыто по умолчанию */
+        }
     </style>
 </head>
 <body>
@@ -100,7 +117,6 @@
         <a href="index.html">Главная</a>
         <a href="info.html">Информация</a>
         <a href="projects.html">Проекты</a>
-        <!-- Выделенная кнопка -->
         <a href="posts.html" class="active nav-btn-posts">Посты 🔥</a>
         <a href="auth.html" id="auth-link">Вход</a>
     </nav>
@@ -173,6 +189,40 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="margin-top:0">Редактировать пост</h3>
+            <label>Заголовок:</label>
+            <input type="text" id="edit-title">
+            <label>Текст:</label>
+            <textarea id="edit-content" rows="5"></textarea>
+            
+            <!-- ADVANCED EDITOR (Только для Админов/Модеров) -->
+            <div id="advanced-edit-section" class="advanced-section">
+                <h4 style="margin-top:0; color:red;">Advanced Options (Staff Only)</h4>
+                <label style="display:block; margin-bottom:5px;">
+                    <input type="checkbox" id="edit-pinned"> 📌 Закрепить пост
+                </label>
+                <label style="display:block; margin-bottom:5px;">
+                    <input type="checkbox" id="edit-temporary"> ⏳ Временный (24ч)
+                </label>
+                <label>Тип поста:</label>
+                <select id="edit-type">
+                    <option value="normal">Обычный</option>
+                    <option value="golden">🏆 Золотой</option>
+                    <option value="roulette">💀 Рулетка</option>
+                    <option value="flappy">🍆 Flappy</option>
+                </select>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:1rem;">
+                <button class="btn-primary" onclick="saveEditedPost()">Сохранить</button>
+                <button class="btn-primary" style="background:grey;" onclick="closeEditModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, doc, deleteDoc, updateDoc, setDoc, getDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -199,6 +249,8 @@
         let isMuted = false;
         let currentPostId = null;
         let allUserRoles = {}; 
+        let userDocUnsub = null;
+        let editingPostId = null; // ID поста, который сейчас редактируется
 
         // Загрузка ролей
         const rolesQuery = query(collection(db, "users"), where("role", "in", ["admin", "mod", "vip"]));
@@ -208,43 +260,62 @@
             if (currentUser) initPosts();
         });
 
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             currentUser = user;
             if (user) {
                 document.getElementById('guest-msg').classList.add('hidden');
                 document.getElementById('auth-link').innerText = "Аккаунт";
                 document.getElementById('current-user-name').innerText = user.email;
 
-                const userRef = doc(db, "users", user.email);
-                const userSnap = await getDoc(userRef);
+                if (userDocUnsub) userDocUnsub(); 
+                userDocUnsub = onSnapshot(doc(db, "users", user.email), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        myRole = data.role || 'user';
+                        isBanned = data.isBanned || false;
+                        isMuted = data.isMuted || false;
+                    } else {
+                        if (user.email === "admin@gav.manka") myRole = 'admin';
+                        else myRole = 'user';
+                        isBanned = false;
+                        isMuted = false;
+                    }
+                    applyPermissions(); 
+                    initPosts(); 
+                });
 
-                if (userSnap.exists()) {
-                    const data = userSnap.data();
-                    myRole = data.role || 'user';
-                    isBanned = data.isBanned || false;
-                    isMuted = data.isMuted || false;
-                } else {
-                    if(user.email === "admin@gav.manka") myRole = 'admin';
-                }
-                applyPermissions();
             } else {
+                if (userDocUnsub) userDocUnsub(); 
                 myRole = 'user'; isBanned = false; isMuted = false;
                 document.getElementById('post-form-container').classList.add('hidden');
                 document.getElementById('comment-form-container').classList.add('hidden');
                 document.getElementById('guest-msg').classList.remove('hidden');
                 document.getElementById('admin-panel').style.display = 'none';
                 document.getElementById('auth-link').innerText = "Вход";
+                initPosts();
             }
-            initPosts();
         });
 
         function applyPermissions() {
             if(isBanned) {
-                alert("ВЫ ЗАБАНЕНЫ! Доступ только для чтения.");
                 document.getElementById('post-form-container').classList.add('hidden');
                 document.getElementById('comment-form-container').classList.add('hidden');
+                const banMsg = document.getElementById('guest-msg');
+                banMsg.innerText = "ВЫ ЗАБАНЕНЫ! Доступ только для чтения.";
+                banMsg.style.color = "red";
+                banMsg.style.fontWeight = "bold";
+                banMsg.classList.remove('hidden');
                 return;
+            } else {
+                const banMsg = document.getElementById('guest-msg');
+                if (currentUser) {
+                    banMsg.classList.add('hidden');
+                } else {
+                    banMsg.innerHTML = '<a href="auth.html">Войдите</a>, чтобы писать.';
+                    banMsg.style.color = "";
+                }
             }
+
             document.getElementById('post-form-container').classList.remove('hidden');
             document.getElementById('comment-form-container').classList.remove('hidden');
 
@@ -291,6 +362,62 @@
             } catch(e) { alert("Ошибка: " + e.message); }
         };
 
+        // --- ЛОГИКА РЕДАКТИРОВАНИЯ ---
+        // Храним данные постов, чтобы не делать лишний запрос при открытии модального окна
+        let currentPostsCache = {}; 
+
+        window.openEditModal = (postId) => {
+            const post = currentPostsCache[postId];
+            if (!post) return;
+
+            editingPostId = postId;
+            document.getElementById('edit-title').value = post.title;
+            document.getElementById('edit-content').value = post.content;
+
+            // Логика Advanced Editor для Админов/Модеров
+            if (myRole === 'admin' || myRole === 'mod') {
+                document.getElementById('advanced-edit-section').style.display = 'block';
+                document.getElementById('edit-pinned').checked = post.isPinned || false;
+                document.getElementById('edit-temporary').checked = post.isTemporary || false;
+                document.getElementById('edit-type').value = post.type || 'normal';
+            } else {
+                document.getElementById('advanced-edit-section').style.display = 'none';
+            }
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = () => {
+            document.getElementById('edit-modal').classList.add('hidden');
+            editingPostId = null;
+        };
+
+        window.saveEditedPost = async () => {
+            if (!editingPostId) return;
+            const newTitle = document.getElementById('edit-title').value;
+            const newContent = document.getElementById('edit-content').value;
+
+            const updates = {
+                title: newTitle,
+                content: newContent
+            };
+
+            // Если Админ/Модер - сохраняем дополнительные поля
+            if (myRole === 'admin' || myRole === 'mod') {
+                updates.isPinned = document.getElementById('edit-pinned').checked;
+                updates.isTemporary = document.getElementById('edit-temporary').checked;
+                updates.type = document.getElementById('edit-type').value;
+            }
+
+            try {
+                await updateDoc(doc(db, "posts", editingPostId), updates);
+                closeEditModal();
+                alert("Пост обновлен!");
+            } catch (e) {
+                alert("Ошибка сохранения: " + e.message);
+            }
+        };
+
         // --- ПОСТЫ И РЕКЛАМА ---
         let postsUnsub = null;
         function initPosts() {
@@ -301,7 +428,14 @@
                 const container = document.getElementById('posts-container');
                 container.innerHTML = "";
                 let posts = [];
-                snapshot.forEach(doc => posts.push({ id: doc.id, ...doc.data() }));
+                currentPostsCache = {}; // Очищаем кеш
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const post = { id: doc.id, ...data };
+                    posts.push(post);
+                    currentPostsCache[doc.id] = post; // Сохраняем в кеш
+                });
 
                 posts.sort((a, b) => {
                     if (a.isPinned && !b.isPinned) return -1;
@@ -320,30 +454,14 @@
                     }
 
                     if (index > 0 && index % 3 === 0) {
+                        // Вставка рекламы (как и было)
                         const adDiv = document.createElement('div');
                         adDiv.className = 'ad-container';
                         let adHTML = '';
                         if (index % 6 === 0) {
-                            adHTML = `
-                                <div style="width:100%; text-align:center">
-                                    <div class="ad-placeholder-text">Реклама (Multiplex)</div>
-                                    <ins class="adsbygoogle"
-                                         style="display:block"
-                                         data-ad-format="autorelaxed"
-                                         data-ad-client="ca-pub-3888025467972768"
-                                         data-ad-slot="7944668033"></ins>
-                                </div>`;
+                            adHTML = `<div style="width:100%; text-align:center"><div class="ad-placeholder-text">Реклама (Multiplex)</div><ins class="adsbygoogle" style="display:block" data-ad-format="autorelaxed" data-ad-client="ca-pub-3888025467972768" data-ad-slot="7944668033"></ins></div>`;
                         } else {
-                            adHTML = `
-                                <div style="width:100%; text-align:center">
-                                    <div class="ad-placeholder-text">Реклама Google</div>
-                                    <ins class="adsbygoogle"
-                                         style="display:block"
-                                         data-ad-client="ca-pub-3888025467972768"
-                                         data-ad-slot="8379782309"
-                                         data-ad-format="auto"
-                                         data-full-width-responsive="true"></ins>
-                                </div>`;
+                            adHTML = `<div style="width:100%; text-align:center"><div class="ad-placeholder-text">Реклама Google</div><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3888025467972768" data-ad-slot="8379782309" data-ad-format="auto" data-full-width-responsive="true"></ins></div>`;
                         }
                         adDiv.innerHTML = adHTML;
                         container.appendChild(adDiv);
@@ -353,14 +471,27 @@
                     const div = document.createElement('div');
                     div.className = `post-card ${post.isPinned ? 'pinned' : ''}`;
                     
-                    let adminControls = "";
-                    if(myRole === 'admin' || myRole === 'mod') {
-                        adminControls = `
-                            <div class="admin-controls" onclick="event.stopPropagation()">
-                                <button class="action-btn btn-pin" onclick="togglePin('${post.id}', ${post.isPinned})">${post.isPinned ? 'Unpin' : '📌'}</button>
-                                <button class="action-btn btn-del" onclick="deletePost('${post.id}')">DEL</button>
-                            </div>
+                    // Кнопки управления (Изменение + Удаление/Пин)
+                    let controlsHTML = "";
+                    const isOwner = currentUser && currentUser.email === post.author;
+                    const isStaff = myRole === 'admin' || myRole === 'mod';
+
+                    // Кнопка Edit: Для владельца или стаффа
+                    if (isOwner || isStaff) {
+                        controlsHTML += `<button class="action-btn btn-edit" onclick="event.stopPropagation(); openEditModal('${post.id}')">EDIT</button>`;
+                    }
+
+                    // Кнопки стаффа: Del, Pin
+                    if (isStaff) {
+                        controlsHTML += `
+                            <button class="action-btn btn-pin" onclick="event.stopPropagation(); togglePin('${post.id}', ${post.isPinned})">${post.isPinned ? 'Unpin' : '📌'}</button>
+                            <button class="action-btn btn-del" onclick="event.stopPropagation(); deletePost('${post.id}')">DEL</button>
                         `;
+                    }
+
+                    // Обертка для кнопок
+                    if (controlsHTML) {
+                        controlsHTML = `<div class="controls-area">${controlsHTML}</div>`;
                     }
 
                     const date = post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleDateString() : '...';
@@ -371,7 +502,7 @@
                     const roleBadge = getBadgeHTML(realRole);
                     
                     div.innerHTML = `
-                        ${adminControls}
+                        ${controlsHTML}
                         <div class="post-meta">Автор: ${escapeHtml(post.author)} ${roleBadge} • ${date} ${tempBadge}</div>
                         <div class="post-title">${titlePrefix}${escapeHtml(post.title)}</div>
                         <div class="post-preview">${escapeHtml(post.content).substring(0, 100)}...</div>
