@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Посты</title>
     
-    <!-- ИКОНКА САЙТА (Чтобы не было ошибки 404) -->
+    <!-- !!! ВАЖНОЕ ИСПРАВЛЕНИЕ ДЛЯ ОШИБКИ CSP !!! -->
+    <!-- Эта строка разрешает скриптам Google работать и не ломать сайт -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
+
+    <!-- ИКОНКА САЙТА -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
 
     <!-- ГЛАВНЫЙ СКРИПТ GOOGLE ADSENSE -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
      crossorigin="anonymous"></script>
 
-    <!-- Праздничный шрифт -->
     <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
 
     <style>
-        /* --- ОСНОВНЫЕ СТИЛИ --- */
+        /* --- СТИЛИ --- */
         body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; padding-bottom: 80px; }
         body.dark-theme { background-color: #121212; color: #e0e0e0; }
         body.dark-theme nav { border-color: #e0e0e0; }
@@ -54,8 +57,6 @@
         .post-card:hover { border-color: black; }
         .post-card.pinned { border: 2px solid #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); } 
         .post-card.admin-chat { border: 2px dashed red; opacity: 0.9; }
-        
-        /* СТИЛИ НОВОГО ГОДА */
         .post-card.new-year { background-color: #b71c1c; border: 3px solid #ffca28; color: #fff; box-shadow: 0 4px 15px rgba(183, 28, 28, 0.5); font-family: 'Lobster', cursive; }
         .post-card.new-year .post-title { font-size: 1.8rem; text-shadow: 1px 1px 0 #000; }
         .post-card.new-year .post-meta, .post-card.new-year .post-id { color: #ffecb3; }
@@ -72,7 +73,6 @@
         .action-btn { border: none; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold; }
         .btn-del { background: red; } .btn-pin { background: gold; color: black; } .btn-edit { background: #2196F3; } .btn-up { background: #4CAF50; }
 
-        /* СТИЛИ РЕКЛАМЫ */
         .ad-container { margin: 1rem 0; padding: 1rem; background: #f9f9f9; border: 1px dashed #ccc; text-align: center; min-height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         body.dark-theme .ad-container { background: #222; border-color: #444; }
         .ad-placeholder-text { font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; }
@@ -129,7 +129,6 @@
 
     <div class="content">
         
-        <!-- АДМИН ПАНЕЛЬ -->
         <div id="admin-panel" class="admin-panel">
             <h3>Управление (Admin/Mod)</h3>
             <p style="font-size:0.9rem">Назначение прав и наказаний по Email.</p>
@@ -148,11 +147,9 @@
             <div id="admin-status-msg" style="font-size:0.8rem; color:green;"></div>
         </div>
 
-        <!-- ЛЕНТА -->
         <div id="feed-view">
             <h2>Лента обсуждений</h2>
             
-            <!-- ПОИСК -->
             <input type="text" id="search-input" class="search-bar" placeholder="🔍 Найти пост по теме, автору или ID..." oninput="filterAndRenderPosts()">
 
             <div id="post-form-container" class="create-post-form hidden">
@@ -192,7 +189,6 @@
             </div>
         </div>
 
-        <!-- ДЕТАЛИ ПОСТА -->
         <div id="post-detail-view">
             <span class="back-btn" onclick="closePost()">← Назад к ленте</span>
             <div id="detail-content"></div>
@@ -203,7 +199,6 @@
         </div>
     </div>
 
-    <!-- ЛИПКИЙ ФУТЕР -->
     <div id="sticky-comment-footer" class="sticky-comment-footer">
         <div class="comment-input-wrapper">
             <input type="text" id="sticky-comment-text" class="sticky-input" placeholder="Написать комментарий..." autocomplete="off">
@@ -211,7 +206,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="edit-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 style="margin-top:0">Редактировать пост</h3>
@@ -492,7 +486,7 @@
 
                 if (post.isAdminChat && myRole !== 'admin' && myRole !== 'mod') return; 
 
-                // РЕКЛАМА (ВКЛЮЧЕНА)
+                // РЕКЛАМА
                 if (index > 0 && index % 3 === 0) {
                     const adDiv = document.createElement('div');
                     adDiv.className = 'ad-container';
