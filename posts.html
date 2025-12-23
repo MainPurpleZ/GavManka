@@ -7,7 +7,6 @@
     
     <!-- ========================================== -->
     <!-- ГЛАВНЫЙ СКРИПТ GOOGLE ADSENSE -->
-    <!-- Ошибка 400 в консоли - это НОРМАЛЬНО, пока сайт не одобрен Google -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
      crossorigin="anonymous"></script>
     <!-- ========================================== -->
@@ -85,7 +84,7 @@
         #theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 2px solid black; padding: 0.5rem; cursor: pointer; z-index: 20; }
         #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
         
-        .role-badge { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; font-weight: bold; }
+        .role-badge { font-size: 0.7rem; padding: 2px 4px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; font-weight: bold; vertical-align: middle; }
         .badge-admin { background: red; color: white; }
         .badge-mod { background: blue; color: white; }
         .badge-vip { background: linear-gradient(90deg, #9C27B0, #E040FB); color: white; border: 1px solid gold; box-shadow: 0 0 5px gold; }
@@ -409,13 +408,27 @@
                 list.innerHTML = "";
                 snapshot.forEach(docSnap => {
                     const c = docSnap.data();
+                    
+                    // Генерируем бейджик для автора комментария
+                    let badgeHTML = "";
+                    if (c.role === 'admin') badgeHTML = '<span class="role-badge badge-admin">ADMIN</span>';
+                    else if (c.role === 'mod') badgeHTML = '<span class="role-badge badge-mod">MOD</span>';
+                    else if (c.role === 'vip') badgeHTML = '<span class="role-badge badge-vip">VIP</span>';
+
                     let delCommBtn = "";
                     if(myRole === 'admin' || myRole === 'mod') {
                          delCommBtn = `<span style="color:red; cursor:pointer; font-size:0.7rem; margin-left:10px;" onclick="deleteComment('${postId}', '${docSnap.id}')">[X]</span>`;
                     }
                     const div = document.createElement('div');
                     div.style.borderLeft = "2px solid #ccc"; div.style.paddingLeft = "1rem"; div.style.marginBottom = "1rem";
-                    div.innerHTML = `<div style="font-weight:bold; font-size:0.8rem;">${escapeHtml(c.author)} ${delCommBtn}:</div><div>${escapeHtml(c.text)}</div>`;
+                    div.innerHTML = `
+                        <div style="font-weight:bold; font-size:0.8rem;">
+                            ${escapeHtml(c.author)} 
+                            ${badgeHTML} 
+                            ${delCommBtn}
+                        </div>
+                        <div>${escapeHtml(c.text)}</div>
+                    `;
                     list.appendChild(div);
                 });
             });
@@ -426,7 +439,19 @@
             if(isBanned || isMuted) return alert("Вы не можете комментировать.");
             const text = document.getElementById('comment-text').value;
             if (!text) return;
-            await addDoc(collection(db, "posts", currentPostId, "comments"), { author: currentUser.email, text, timestamp: serverTimestamp() });
+            
+            // Сохраняем текущую роль пользователя вместе с комментарием
+            let roleToSave = 'user';
+            if (myRole === 'admin' || myRole === 'mod' || myRole === 'vip') {
+                roleToSave = myRole;
+            }
+
+            await addDoc(collection(db, "posts", currentPostId, "comments"), { 
+                author: currentUser.email, 
+                text, 
+                timestamp: serverTimestamp(),
+                role: roleToSave 
+            });
             document.getElementById('comment-text').value = "";
         };
         
