@@ -4,144 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Главная</title>
-    
-    <!-- ГЛАВНЫЙ СКРИПТ GOOGLE ADSENSE -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
-     crossorigin="anonymous"></script>
-
+    <meta name="description" content="Gav.manka - Ламповый сайт для общения в стиле старого интернета.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; padding-bottom: 50px; }
-        body.dark-theme { background-color: #121212; color: #e0e0e0; }
-        body.dark-theme nav { border-color: #e0e0e0; }
-        body.dark-theme nav a { color: #e0e0e0; }
-        body.dark-theme h1 a { color: #e0e0e0; }
-        body.dark-theme .banner-wrapper { border-color: #e0e0e0; opacity: 0.9; }
-        body.dark-theme #theme-toggle { border-color: #e0e0e0; color: #e0e0e0; }
-        body.dark-theme #theme-toggle:hover { background-color: #333; }
-        @media (min-width: 768px) { body { padding: 3rem; padding-bottom: 50px; } }
-
-        .banner-wrapper { width: 100%; height: 250px; margin-bottom: 2rem; border: 2px solid black; overflow: hidden; position: relative; background-color: #f0f0f0; z-index: 1; }
-        .site-banner { width: 100%; height: 100%; object-fit: cover; display: block; }
-        @media (min-width: 768px) { .banner-wrapper { height: 350px; } }
-
-        h1 { font-size: 2.5rem; margin: 0 0 1.5rem 0; font-weight: 700; }
-        h1 a { text-decoration: none; color: black; }
-        @media (min-width: 768px) { h1 { font-size: 4rem; } }
-
-        nav { border-top: 2px solid black; border-bottom: 2px solid black; padding: 0.75rem 0; margin-bottom: 2.5rem; display: flex; gap: 2rem; align-items: center; }
-        nav a { font-size: 1.25rem; color: black; text-decoration: none; font-weight: 500; }
-        nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
-        nav a.active { font-weight: bold; text-decoration: underline; }
-
-        .nav-btn-posts {
-            color: #d32f2f !important;
-            border: 2px solid #d32f2f;
-            padding: 4px 10px;
-            border-radius: 4px;
-            animation: pulse-btn 2s infinite;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            text-decoration: none !important;
-        }
-        .nav-btn-posts:hover {
-            background-color: #d32f2f;
-            color: white !important;
-        }
-        @keyframes pulse-btn {
-            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(211, 47, 47, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
-        }
-
-        .content { max-width: 50rem; font-size: 1.2rem; line-height: 1.6; position: relative; z-index: 10; }
-        #theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 2px solid black; padding: 0.5rem; cursor: pointer; z-index: 20; }
-        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-
-        /* МУЗЫКАЛЬНЫЙ ПЛЕЕР */
-        #music-player {
-            position: fixed; bottom: 10px; left: 10px; z-index: 1000;
-            background: white; padding: 5px 10px; border: 2px solid black;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
-            font-family: monospace; font-size: 0.9rem;
-        }
-        body.dark-theme #music-player { background: #222; border-color: #e0e0e0; box-shadow: 4px 4px 0px 0px #e0e0e0; color: #e0e0e0; }
-        #music-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0; color: inherit; }
+        body{margin:0;min-height:100vh;background-color:#fcfbf9;color:#111;font-family:'Merriweather',serif;padding:0;transition:background-color .3s,color .3s;line-height:1.6}
+        body.dark-theme{background-color:#121212;color:#e0e0e0}
+        .container{max-width:900px;margin:0 auto;padding:2rem 1rem}
+        nav{border-top:3px solid #111;border-bottom:1px solid #111;padding:1rem 0;margin:2rem 0;display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap}
+        body.dark-theme nav{border-color:#e0e0e0}
+        nav a{font-family:'Oswald',sans-serif;text-transform:uppercase;color:inherit;text-decoration:none;font-size:1.1rem;letter-spacing:1px;padding:5px 10px;transition:all .2s}
+        nav a:hover,nav a.active{background:#111;color:#fff}
+        body.dark-theme nav a:hover,body.dark-theme nav a.active{background:#fff;color:#000}
+        .nav-btn-posts{color:#d32f2f!important;border:2px solid #d32f2f}
+        .nav-btn-posts:hover{background:#d32f2f!important;color:#fff!important}
+        h1{font-family:'Oswald',sans-serif;font-size:4rem;text-align:center;margin:1rem 0;letter-spacing:-2px;text-transform:uppercase}
+        h2{font-family:'Oswald',sans-serif;font-size:2rem;margin-top:2rem;border-bottom:2px solid #333;padding-bottom:10px}
+        body.dark-theme h2{border-color:#555}
+        .banner-wrapper{width:100%;height:300px;background:#ddd;margin-bottom:2rem;border:3px solid #111;overflow:hidden}
+        body.dark-theme .banner-wrapper{border-color:#e0e0e0;opacity:.8}
+        .site-banner{width:100%;height:100%;object-fit:cover}
+        .hero-text{text-align:center;font-size:1.2rem;margin-bottom:3rem;max-width:700px;margin-left:auto;margin-right:auto}
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;margin-top:2rem}
+        .feature-card{border:1px solid #ccc;padding:1.5rem;background:#fff;transition:transform .2s}
+        body.dark-theme .feature-card{background:#1e1e1e;border-color:#333}
+        .feature-card:hover{transform:translateY(-5px);box-shadow:5px 5px 0 rgba(0,0,0,0.1)}
+        .feature-title{font-family:'Oswald',sans-serif;font-size:1.2rem;margin-bottom:0.5rem;font-weight:bold}
+        #theme-toggle{position:fixed;bottom:20px;right:20px;background:#111;color:#fff;border:none;padding:10px 15px;cursor:pointer;font-family:'Oswald',sans-serif;z-index:100;border-radius:50px;box-shadow:0 4px 10px rgba(0,0,0,0.3)}
+        body.dark-theme #theme-toggle{background:#fff;color:#000}
+        #snow-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+        #music-player{position:fixed;bottom:20px;left:20px;background:#fff;border:2px solid #000;padding:5px 15px;display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;z-index:100;box-shadow:3px 3px 0 #000}
+        body.dark-theme #music-player{background:#222;border-color:#fff;box-shadow:3px 3px 0 #fff}
     </style>
 </head>
 <body>
-    <button id="theme-toggle">☾ Тема</button>
     <canvas id="snow-canvas"></canvas>
-
-    <!-- МУЗЫКА -->
+    <button id="theme-toggle">☾ Тема</button>
+    
     <div id="music-player">
-        <button id="music-btn" onclick="toggleMusic()">▶</button>
+        <button onclick="window.toggleMusic()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:inherit">▶</button>
         <span id="track-name">music1.mp3</span>
-        <audio id="audio-element" src="music1.mp3" onended="nextTrack()"></audio>
+        <audio id="audio-element" src="music1.mp3" onended="window.nextTrack()"></audio>
     </div>
 
-    <div class="banner-wrapper">
-        <img src="background.png" alt="Баннер" class="site-banner" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'font-size:2rem; opacity:0.3;\'>[Gav.manka]</span>';">
-    </div>
+    <div class="container">
+        <div class="banner-wrapper">
+            <img src="background.png" alt="Gav.manka Banner" class="site-banner" onerror="this.style.display='none';this.parentElement.style.backgroundColor='#333';this.parentElement.innerHTML='<div style=\'display:flex;height:100%;align-items:center;justify-content:center;color:white;font-family:Oswald\'>GAV.MANKA DIGITAL</div>'">
+        </div>
 
-    <h1><a href="index.html">Gav.manka</a></h1>
+        <h1>Gav.manka</h1>
 
-    <nav>
-        <a href="index.html" class="active">Главная</a>
-        <a href="info.html">Информация</a>
-        <a href="projects.html">Проекты</a>
-        <a href="posts.html" class="nav-btn-posts">Посты 🔥</a>
-        <a href="auth.html">Вход</a>
-    </nav>
+        <nav>
+            <a href="index.html" class="active">Главная</a>
+            <a href="info.html">Инфо</a>
+            <a href="projects.html">Проекты</a>
+            <a href="posts.html" class="nav-btn-posts">Посты 🔥</a>
+            <a href="auth.html">Аккаунт</a>
+        </nav>
 
-    <div class="content">
-        <h2>Добро пожаловать</h2>
-        <p>
-            Это главная страница сайта Gav.manka. <br>
-            Здесь царит классика и статика. Выберите раздел в меню выше, чтобы узнать больше.
-        </p>
+        <div class="hero-text">
+            <p><strong>Добро Пожаловать!</strong> Мы - команда GAV.MANKA и мы разработчики некоторых проектов! Вы можете общаться над любой темой... Только есть правила...</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-title">Свобода!</div>
+                <p>Мы работаем со Сообществом над этим сайтом уже почти 5 дня. И нам кажется пора улучшить наше Сообщество подарив много идей и свобод...</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Сообщество</div>
+                <p>Место для дискуссий, споров и поиска истины. Уважайте друг друга (или нет, но в меру).</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Эстетика</div>
+                <p>Мы пытаемся делать эстетику на макс. тоесть сделать людей - полюбить ностальгию и социальность.</p>
+            </div>
+        </div>
+
+        <div style="margin-top:3rem;text-align:center;font-size:0.9rem;opacity:0.7">
+            &copy; 2025, Gav.Manka Все права защищены курицой.
+        </div>
     </div>
 
     <script>
-        const toggleBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-theme');
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
-        });
+        // Изолируем логику, чтобы избежать конфликтов переменных
+        (function() {
+            // Тема
+            const tBtn = document.getElementById('theme-toggle');
+            const bd = document.body;
+            if (localStorage.getItem('theme') === 'dark') bd.classList.add('dark-theme');
+            
+            tBtn.onclick = () => {
+                bd.classList.toggle('dark-theme');
+                localStorage.setItem('theme', bd.classList.contains('dark-theme') ? 'dark' : 'light');
+            };
 
-        // МУЗЫКА
-        let currentTrack = 1;
-        const TOTAL_TRACKS = 3; // <-- МЕНЯЙТЕ ЦИФРУ ТУТ, ЕСЛИ ЗАГРУЗИТЕ БОЛЬШЕ ПЕСЕН
-        const audio = document.getElementById('audio-element');
-        const mBtn = document.getElementById('music-btn');
-        const mLabel = document.getElementById('track-name');
+            // Музыка (С обработкой ошибок)
+            let cT = 1;
+            const TT = 3;
+            const aud = document.getElementById('audio-element');
+            const mN = document.getElementById('track-name');
+            
+            // Обработчик ошибок загрузки аудио
+            aud.onerror = function() {
+                console.warn("Файл не найден:", aud.src);
+                // Не показываем ошибку пользователю явно, чтобы не пугать, но в консоли будет видно
+            };
+            
+            window.toggleMusic = function() {
+                if (aud.paused) { 
+                    const playPromise = aud.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.warn("Ошибка воспроизведения (возможно файл отсутствует):", error);
+                        });
+                    }
+                } else { 
+                    aud.pause(); 
+                }
+            };
+            
+            window.nextTrack = function() {
+                cT = cT >= TT ? 1 : cT + 1;
+                aud.src = `music${cT}.mp3`;
+                mN.innerText = `music${cT}.mp3`;
+                const playPromise = aud.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.warn("Ошибка переключения трека:", error);
+                    });
+                }
+            };
 
-        function toggleMusic() {
-            if (audio.paused) { audio.play(); mBtn.innerText = "⏸"; } 
-            else { audio.pause(); mBtn.innerText = "▶"; }
-        }
-        function nextTrack() {
-            currentTrack++;
-            if (currentTrack > TOTAL_TRACKS) currentTrack = 1;
-            audio.src = `music${currentTrack}.mp3`;
-            mLabel.innerText = `music${currentTrack}.mp3`;
-            audio.play();
-            mBtn.innerText = "⏸";
-        }
+            // Снег (переменные внутри функции, чтобы не было ошибки 'w' declared)
+            const cvs = document.getElementById('snow-canvas');
+            const ctx = cvs.getContext('2d');
+            let snowW, snowH, snowP = [];
 
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        function initSnow() { resize(); window.addEventListener('resize', resize); for(let i=0; i<60; i++) particles.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()*50}); drawSnow(); }
-        let angle = 0;
-        function drawSnow() { ctx.clearRect(0, 0, width, height); ctx.fillStyle = body.classList.contains('dark-theme') ? "rgba(255,255,255,0.8)" : "rgba(100,100,100,0.3)"; ctx.beginPath(); for(let i=0; i<particles.length; i++) { let p = particles[i]; ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true); } ctx.fill(); updateSnow(); requestAnimationFrame(drawSnow); }
-        function updateSnow() { angle += 0.01; for(let i=0; i<particles.length; i++) { let p = particles[i]; p.y += Math.cos(angle+p.d) + 1 + p.r/2; p.x += Math.sin(angle)*2; if(p.x>width+5 || p.x<-5 || p.y>height) { if(i%3>0) particles[i] = {x: Math.random()*width, y: -10, r: p.r, d: p.d}; else { if(Math.sin(angle)>0) particles[i] = {x: -5, y: Math.random()*height, r: p.r, d: p.d}; else particles[i] = {x: width+5, y: Math.random()*height, r: p.r, d: p.d}; } } } }
-        initSnow();
+            function rs() {
+                snowW = cvs.width = window.innerWidth;
+                snowH = cvs.height = window.innerHeight;
+            }
+
+            function initSnow() {
+                rs();
+                window.onresize = rs;
+                for (let i = 0; i < 60; i++) {
+                    snowP.push({
+                        x: Math.random() * snowW,
+                        y: Math.random() * snowH,
+                        r: Math.random() * 3 + 1,
+                        d: Math.random() * 50
+                    });
+                }
+                loopSnow();
+            }
+
+            function loopSnow() {
+                ctx.clearRect(0, 0, snowW, snowH);
+                ctx.fillStyle = bd.classList.contains('dark-theme') ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.1)';
+                ctx.beginPath();
+                snowP.forEach(e => {
+                    ctx.moveTo(e.x, e.y);
+                    ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+                });
+                ctx.fill();
+                
+                snowP.forEach((e, i) => {
+                    e.y += Math.cos(0.01 + e.d) + 1 + e.r / 2;
+                    e.x += Math.sin(0.01) * 2;
+                    if (e.y > snowH) {
+                        snowP[i] = { x: Math.random() * snowW, y: -5, r: e.r, d: e.d };
+                    }
+                });
+                requestAnimationFrame(loopSnow);
+            }
+
+            initSnow();
+        })();
     </script>
 </body>
 </html>
