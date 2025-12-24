@@ -5,145 +5,288 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gav.manka - Проекты</title>
     
-    <!-- ГЛАВНЫЙ СКРИПТ GOOGLE ADSENSE -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768"
-     crossorigin="anonymous"></script>
+    <!-- CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3888025467972768" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Oswald:wght@500&display=swap" rel="stylesheet">
+    
     <style>
-        body { margin: 0; min-height: 100vh; background-color: white; color: black; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; padding: 1rem; transition: background-color 0.3s ease, color 0.3s ease; position: relative; padding-bottom: 50px; }
+        /* BASE STYLES */
+        body { margin: 0; min-height: 100vh; background-color: #fcfbf9; color: #111; font-family: 'Merriweather', serif; padding: 0; transition: background-color 0.3s, color 0.3s; padding-bottom: 80px; }
         body.dark-theme { background-color: #121212; color: #e0e0e0; }
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+        
+        nav { border-top: 3px solid #111; border-bottom: 1px solid #111; padding: 1rem 0; margin: 2rem 0; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
         body.dark-theme nav { border-color: #e0e0e0; }
-        body.dark-theme nav a { color: #e0e0e0; }
-        body.dark-theme h1 a { color: #e0e0e0; }
-        body.dark-theme .banner-wrapper { border-color: #e0e0e0; opacity: 0.9; }
-        body.dark-theme #theme-toggle { border-color: #e0e0e0; color: #e0e0e0; }
-        body.dark-theme #theme-toggle:hover { background-color: #333; }
-        @media (min-width: 768px) { body { padding: 3rem; padding-bottom: 50px; } }
+        nav a { font-family: 'Oswald', sans-serif; text-transform: uppercase; color: inherit; text-decoration: none; font-size: 1.1rem; transition: all 0.2s; padding: 5px; }
+        nav a:hover, nav a.active { background: #111; color: #fff; }
+        body.dark-theme nav a:hover { background: #fff; color: #000; }
+        
+        .nav-btn-posts { color: #d32f2f !important; border: 2px solid #d32f2f; padding: 2px 8px; }
+        .nav-btn-posts:hover { background: #d32f2f !important; color: #fff !important; }
+        
+        h1 { font-family: 'Oswald', sans-serif; font-size: 3rem; margin: 0 0 1rem; text-align: center; text-transform: uppercase; }
+        
+        /* PROJECT CARDS */
+        .projects-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .project-card { border: 3px solid #111; padding: 0; background: #fff; display: flex; flex-direction: column; transition: transform 0.2s; position: relative; }
+        body.dark-theme .project-card { background: #1e1e1e; border-color: #444; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 5px 5px 0px rgba(0,0,0,0.2); }
 
-        .banner-wrapper { width: 100%; height: 250px; margin-bottom: 2rem; border: 2px solid black; overflow: hidden; position: relative; background-color: #f0f0f0; z-index: 1; }
-        .site-banner { width: 100%; height: 100%; object-fit: cover; display: block; }
-        @media (min-width: 768px) { .banner-wrapper { height: 350px; } }
+        .project-image { width: 100%; height: 200px; object-fit: cover; border-bottom: 3px solid #111; background: #eee; }
+        body.dark-theme .project-image { border-bottom-color: #444; background: #333; }
 
-        h1 { font-size: 2.5rem; margin: 0 0 1.5rem 0; font-weight: 700; }
-        h1 a { text-decoration: none; color: black; }
-        @media (min-width: 768px) { h1 { font-size: 4rem; } }
+        .project-content { padding: 1.5rem; }
 
-        nav { border-top: 2px solid black; border-bottom: 2px solid black; padding: 0.75rem 0; margin-bottom: 2.5rem; display: flex; gap: 2rem; align-items: center; }
-        nav a { font-size: 1.25rem; color: black; text-decoration: none; font-weight: 500; }
-        nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
-        nav a.active { font-weight: bold; text-decoration: underline; }
+        .project-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 10px; }
+        .p-title { font-family: 'Oswald', sans-serif; font-size: 1.8rem; font-weight: bold; }
+        
+        /* TAGS */
+        .p-status { font-size: 0.8rem; padding: 4px 8px; border: 2px solid #111; text-transform: uppercase; font-weight: bold; font-family: 'Oswald', sans-serif; }
+        .status-active { background: #4caf50; color: white; border-color: #2e7d32; }
+        .status-beta { background: #ff9800; color: white; border-color: #f57c00; }
+        .status-planned { background: #2196f3; color: white; border-color: #0d47a1; }
+        .status-closed { background: #f44336; color: white; border-color: #b71c1c; }
 
-        .nav-btn-posts {
-            color: #d32f2f !important;
-            border: 2px solid #d32f2f;
-            padding: 4px 10px;
-            border-radius: 4px;
-            animation: pulse-btn 2s infinite;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            text-decoration: none !important;
-        }
-        .nav-btn-posts:hover {
-            background-color: #d32f2f;
-            color: white !important;
-        }
-        @keyframes pulse-btn {
-            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(211, 47, 47, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
-        }
+        .p-desc { font-size: 1rem; line-height: 1.6; white-space: pre-wrap; }
 
-        .content { max-width: 50rem; font-size: 1.2rem; line-height: 1.6; position: relative; z-index: 10; }
-        #theme-toggle { position: absolute; top: 1rem; right: 1rem; background: none; border: 2px solid black; padding: 0.5rem; cursor: pointer; z-index: 20; }
-        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        /* ADMIN FORM */
+        .admin-project-panel { border: 3px solid red; padding: 1.5rem; margin-bottom: 2rem; background: #fff0f0; display: none; }
+        body.dark-theme .admin-project-panel { background: #2a0000; border-color: red; }
+        .admin-header { color: red; font-family: 'Oswald', sans-serif; margin-top: 0; }
+        
+        input, textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; font-family: inherit; border: 2px solid #ccc; box-sizing: border-box; background: transparent; color: inherit; }
+        input:focus, textarea:focus, select:focus { border-color: #111; outline: none; }
+        body.dark-theme input, body.dark-theme textarea, body.dark-theme select { border-color: #555; }
+        body.dark-theme input:focus, body.dark-theme textarea:focus { border-color: #fff; }
 
-        /* МУЗЫКАЛЬНЫЙ ПЛЕЕР */
-        #music-player {
-            position: fixed; bottom: 10px; left: 10px; z-index: 1000;
-            background: white; padding: 5px 10px; border: 2px solid black;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
-            font-family: monospace; font-size: 0.9rem;
-        }
-        body.dark-theme #music-player { background: #222; border-color: #e0e0e0; box-shadow: 4px 4px 0px 0px #e0e0e0; color: #e0e0e0; }
-        #music-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0; color: inherit; }
+        .btn-create { background: #111; color: white; border: none; padding: 10px 20px; cursor: pointer; font-family: 'Oswald', sans-serif; text-transform: uppercase; width: 100%; font-size: 1.1rem; }
+        .btn-create:hover { opacity: 0.9; }
+        
+        .btn-delete { position: absolute; top: 10px; right: 10px; background: red; color: white; border: 2px solid white; padding: 5px 10px; font-weight: bold; cursor: pointer; z-index: 10; display: none; }
+
+        /* UI ELEMENTS */
+        #theme-toggle { position: fixed; bottom: 20px; right: 20px; background: #111; color: #fff; border: none; padding: 10px 15px; cursor: pointer; font-family: 'Oswald', sans-serif; z-index: 100; border-radius: 50px; }
+        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99; }
+        #music-player { position: fixed; bottom: 20px; left: 20px; background: #fff; border: 2px solid #000; padding: 5px 15px; display: flex; align-items: center; gap: 10px; font-family: 'Oswald', sans-serif; z-index: 100; }
+        body.dark-theme #music-player { background: #222; border-color: #fff; }
     </style>
 </head>
 <body>
-    <button id="theme-toggle">☾ Тема</button>
     <canvas id="snow-canvas"></canvas>
+    <button id="theme-toggle">☾ Tema</button>
+    <div id="music-player"><button onclick="window.toggleMusic()" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:inherit">▶</button><span id="track-name">music1.mp3</span><audio id="audio-element" src="music1.mp3" onended="window.nextTrack()"></audio></div>
 
-    <!-- МУЗЫКА -->
-    <div id="music-player">
-        <button id="music-btn" onclick="toggleMusic()">▶</button>
-        <span id="track-name">music1.mp3</span>
-        <audio id="audio-element" src="music1.mp3" onended="nextTrack()"></audio>
+    <div class="container">
+        <h1>Gav.manka</h1>
+        <nav>
+            <a href="index.html">Главная</a>
+            <a href="info.html">Инфо</a>
+            <a href="projects.html" class="active">Проекты</a>
+            <a href="posts.html" class="nav-btn-posts">Посты 🔥</a>
+            <a href="auth.html">Вход</a>
+        </nav>
+
+        <!-- ПАНЕЛЬ СОЗДАНИЯ (ТОЛЬКО ДЛЯ АДМИНОВ) -->
+        <div id="admin-project-panel" class="admin-project-panel">
+            <h3 class="admin-header">⚡ Добавить Проект (Админ)</h3>
+            <input type="text" id="proj-title" placeholder="Название проекта">
+            <textarea id="proj-desc" rows="3" placeholder="Описание проекта..."></textarea>
+            
+            <label style="font-weight:bold; display:block; margin-bottom:5px;">Статус (Тег):</label>
+            <select id="proj-status">
+                <option value="active">🟢 Активен</option>
+                <option value="beta">🟠 Бета-тест</option>
+                <option value="planned">🔵 В планах</option>
+                <option value="closed">🔴 Закрыт</option>
+            </select>
+
+            <label style="font-weight:bold; display:block; margin-bottom:5px;">Картинка (из папки GitHub):</label>
+            <input type="text" id="proj-img" placeholder="Например: background.png или mygame.jpg">
+            
+            <button class="btn-create" onclick="createProject()">Опубликовать Проект</button>
+        </div>
+
+        <div id="projects-grid" class="projects-grid">
+            <p style="text-align:center; opacity:0.5;">Загрузка проектов...</p>
+        </div>
     </div>
 
-    <div class="banner-wrapper">
-        <img src="background.png" alt="Баннер" class="site-banner" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'font-size:2rem; opacity:0.3;\'>[Gav.manka]</span>';">
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <h1><a href="index.html">Gav.manka</a></h1>
+        // FIREBASE CONFIG
+        const firebaseConfig = {
+          apiKey: "AIzaSyBj0O4Td-w4Dm2ii5S2Rg8pvAnzbY1C6Rw",
+          authDomain: "gavmanka-879a8.firebaseapp.com",
+          projectId: "gavmanka-879a8",
+          storageBucket: "gavmanka-879a8.firebasestorage.app",
+          messagingSenderId: "122827134074",
+          appId: "1:122827134074:web:44e44097cc102e666ad7c3",
+          measurementId: "G-5HQ1WTQQSK"
+        };
 
-    <nav>
-        <a href="index.html">Главная</a>
-        <a href="info.html">Информация</a>
-        <a href="projects.html" class="active">Проекты</a>
-        <a href="posts.html" class="nav-btn-posts">Посты 🔥</a>
-        <a href="auth.html">Вход</a>
-    </nav>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-    <div class="content">
-        <h2>Наши проекты</h2>
-        <p>Здесь пока пусто, но скоро появятся великие дела.</p>
-        <ul style="list-style-type: square; margin-top: 1rem; padding-left: 1.5rem;">
-            <li>Проект 1: [В разработке]</li>
-            <li>Проект 2: [В планах]</li>
-            <li>Проект 3: [Засекречено]</li>
-        </ul>
-    </div>
+        let currentUser = null;
+        let myRole = 'user';
 
-    <script>
-        const toggleBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        if (localStorage.getItem('theme') === 'dark') body.classList.add('dark-theme');
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', body.classList.contains('dark-theme') ? 'dark' : 'light');
+        // AUTH & PERMISSIONS
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                // Проверяем роль
+                const userRef = doc(db, "users", user.email);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    myRole = userSnap.data().role || 'user';
+                } else {
+                    if (user.email === "admin@gav.manka") myRole = 'admin';
+                }
+            } else {
+                myRole = 'user';
+            }
+            renderAdminPanel();
+            initProjects(); // Перерисовываем, чтобы появились кнопки удаления
         });
 
-        // МУЗЫКА
-        let currentTrack = 1;
-        const TOTAL_TRACKS = 3;
-        const audio = document.getElementById('audio-element');
-        const mBtn = document.getElementById('music-btn');
-        const mLabel = document.getElementById('track-name');
-
-        function toggleMusic() {
-            if (audio.paused) { audio.play(); mBtn.innerText = "⏸"; } 
-            else { audio.pause(); mBtn.innerText = "▶"; }
-        }
-        function nextTrack() {
-            currentTrack++;
-            if (currentTrack > TOTAL_TRACKS) currentTrack = 1;
-            audio.src = `music${currentTrack}.mp3`;
-            mLabel.innerText = `music${currentTrack}.mp3`;
-            audio.play();
-            mBtn.innerText = "⏸";
+        function renderAdminPanel() {
+            const panel = document.getElementById('admin-project-panel');
+            if (myRole === 'admin' || myRole === 'mod') {
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
         }
 
-        const canvas = document.getElementById('snow-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        function initSnow() { resize(); window.addEventListener('resize', resize); for(let i=0; i<60; i++) particles.push({x: Math.random()*width, y: Math.random()*height, r: Math.random()*3+1, d: Math.random()*50}); drawSnow(); }
-        let angle = 0;
-        function drawSnow() { ctx.clearRect(0, 0, width, height); ctx.fillStyle = body.classList.contains('dark-theme') ? "rgba(255,255,255,0.8)" : "rgba(100,100,100,0.3)"; ctx.beginPath(); for(let i=0; i<particles.length; i++) { let p = particles[i]; ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true); } ctx.fill(); updateSnow(); requestAnimationFrame(drawSnow); }
-        function updateSnow() { angle += 0.01; for(let i=0; i<particles.length; i++) { let p = particles[i]; p.y += Math.cos(angle+p.d) + 1 + p.r/2; p.x += Math.sin(angle)*2; if(p.x>width+5 || p.x<-5 || p.y>height) { if(i%3>0) particles[i] = {x: Math.random()*width, y: -10, r: p.r, d: p.d}; else { if(Math.sin(angle)>0) particles[i] = {x: -5, y: Math.random()*height, r: p.r, d: p.d}; else particles[i] = {x: width+5, y: Math.random()*height, r: p.r, d: p.d}; } } } }
-        initSnow();
+        // CREATE PROJECT
+        window.createProject = async () => {
+            if (myRole !== 'admin' && myRole !== 'mod') return alert("Только админы могут создавать проекты!");
+            
+            const title = document.getElementById('proj-title').value;
+            const desc = document.getElementById('proj-desc').value;
+            const status = document.getElementById('proj-status').value;
+            const img = document.getElementById('proj-img').value;
+
+            if (!title || !desc) return alert("Введите название и описание!");
+
+            try {
+                await addDoc(collection(db, "projects"), {
+                    title,
+                    description: desc,
+                    status,
+                    image: img || '', // Если пусто, будет без картинки или заглушка
+                    timestamp: serverTimestamp()
+                });
+                // Clear form
+                document.getElementById('proj-title').value = "";
+                document.getElementById('proj-desc').value = "";
+                document.getElementById('proj-img').value = "";
+                alert("Проект добавлен!");
+            } catch (e) {
+                alert("Ошибка: " + e.message);
+            }
+        };
+
+        // DELETE PROJECT
+        window.deleteProject = async (id) => {
+            if (myRole !== 'admin' && myRole !== 'mod') return;
+            if (confirm("Удалить этот проект навсегда?")) {
+                await deleteDoc(doc(db, "projects", id));
+            }
+        }
+
+        // LOAD PROJECTS
+        function initProjects() {
+            const q = query(collection(db, "projects"), orderBy("timestamp", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                const grid = document.getElementById('projects-grid');
+                grid.innerHTML = "";
+                
+                if (snapshot.empty) {
+                    grid.innerHTML = "<p style='text-align:center; opacity:0.5'>Нет активных проектов.</p>";
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const p = docSnap.data();
+                    const pid = docSnap.id;
+                    
+                    // Статус текст и класс
+                    let statusText = "Неизвестно";
+                    let statusClass = "";
+                    if(p.status === 'active') { statusText = "АКТИВЕН"; statusClass = "status-active"; }
+                    if(p.status === 'beta') { statusText = "BETA"; statusClass = "status-beta"; }
+                    if(p.status === 'planned') { statusText = "В ПЛАНАХ"; statusClass = "status-planned"; }
+                    if(p.status === 'closed') { statusText = "ЗАКРЫТ"; statusClass = "status-closed"; }
+
+                    // Картинка (если нет, берем заглушку)
+                    const imgSrc = p.image ? p.image : 'background.png'; 
+                    // Можно добавить проверку onerror прямо в тег img
+
+                    // Кнопка удаления для админа
+                    let deleteBtn = "";
+                    if (myRole === 'admin' || myRole === 'mod') {
+                        deleteBtn = `<button class="btn-delete" style="display:block" onclick="deleteProject('${pid}')">УДАЛИТЬ</button>`;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'project-card';
+                    card.innerHTML = `
+                        ${deleteBtn}
+                        <img src="${imgSrc}" class="project-image" onerror="this.src='https://via.placeholder.com/800x400?text=No+Image'">
+                        <div class="project-content">
+                            <div class="project-header">
+                                <span class="p-title">${escapeHtml(p.title)}</span>
+                                <span class="p-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="p-desc">${escapeHtml(p.description)}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // --- GLOBAL UI SCRIPTS (Theme, Music, Snow) ---
+        (function() {
+            const tBtn = document.getElementById('theme-toggle');
+            const bd = document.body;
+            if (localStorage.getItem('theme') === 'dark') bd.classList.add('dark-theme');
+            tBtn.onclick = () => {
+                bd.classList.toggle('dark-theme');
+                localStorage.setItem('theme', bd.classList.contains('dark-theme') ? 'dark' : 'light');
+            };
+
+            // Music
+            let cT = 1;
+            const TT = 3;
+            const aud = document.getElementById('audio-element');
+            const mN = document.getElementById('track-name');
+            window.toggleMusic = function() { aud.paused ? aud.play() : aud.pause(); };
+            window.nextTrack = function() { cT = cT >= TT ? 1 : cT + 1; aud.src = `music${cT}.mp3`; mN.innerText = `music${cT}.mp3`; aud.play(); };
+
+            // Snow
+            const cvs = document.getElementById('snow-canvas');
+            const ctx = cvs.getContext('2d');
+            let sW, sH, sP = [];
+            function rs() { sW = cvs.width = window.innerWidth; sH = cvs.height = window.innerHeight; }
+            function init() { rs(); window.onresize = rs; for (let i = 0; i < 60; i++) sP.push({ x: Math.random() * sW, y: Math.random() * sH, r: Math.random() * 3 + 1, d: Math.random() * 50 }); loop(); }
+            function loop() { ctx.clearRect(0, 0, sW, sH); ctx.fillStyle = bd.classList.contains('dark-theme') ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.1)'; ctx.beginPath(); sP.forEach(e => { ctx.moveTo(e.x, e.y); ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2); }); ctx.fill(); sP.forEach((e, i) => { e.y += Math.cos(0.01 + e.d) + 1 + e.r / 2; e.x += Math.sin(0.01) * 2; if (e.y > sH) { sP[i] = { x: Math.random() * sW, y: -5, r: e.r, d: e.d }; } }); requestAnimationFrame(loop); }
+            init();
+        })();
     </script>
 </body>
 </html>
